@@ -8,20 +8,20 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>记一次线程安全问题.md | Jayus的个人博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="一、交代背景我这边有一个系统，提供一个 RPC 接口去发送各种信息（比如短信、邮件、微信）等等渠道。我这边的系统架构是这样的： 系统架构">
+  <meta name="description" content="一、交代背景记录一次线程安全问题的解决，我这边有一个系统，提供一个 RPC 接口去发送各种信息（比如短信、邮件、微信）等等渠道。">
 <meta name="keywords" content="线程安全">
 <meta property="og:type" content="article">
 <meta property="og:title" content="记一次线程安全问题.md">
 <meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2019&#x2F;07&#x2F;21&#x2F;%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98&#x2F;index.html">
 <meta property="og:site_name" content="Jayus的个人博客">
-<meta property="og:description" content="一、交代背景我这边有一个系统，提供一个 RPC 接口去发送各种信息（比如短信、邮件、微信）等等渠道。我这边的系统架构是这样的： 系统架构">
+<meta property="og:description" content="一、交代背景记录一次线程安全问题的解决，我这边有一个系统，提供一个 RPC 接口去发送各种信息（比如短信、邮件、微信）等等渠道。">
 <meta property="og:locale" content="en">
 <meta property="og:image" content="https:&#x2F;&#x2F;mmbiz.qpic.cn&#x2F;mmbiz_png&#x2F;2BGWl1qPxib03CDpVphYxW5RooE4RdPCHzcQWmsLKfBxJibLnz9YIKubTXibwZMI43A6vAqXqviczF3XcUc7B0icNXg&#x2F;640?wx_fmt&#x3D;png">
 <meta property="og:image" content="https:&#x2F;&#x2F;mmbiz.qpic.cn&#x2F;mmbiz_png&#x2F;2BGWl1qPxib03CDpVphYxW5RooE4RdPCHXD5DC6jU8rwf9DAtBfD6rB3bkmHU2XUHibexBzGtiabovX88wjgPQ9tw&#x2F;640?wx_fmt&#x3D;png">
 <meta property="og:image" content="https:&#x2F;&#x2F;mmbiz.qpic.cn&#x2F;mmbiz_png&#x2F;2BGWl1qPxib03CDpVphYxW5RooE4RdPCHbwdL6JHXOQvjlvVH7ek4p239G2OhfJyqC43ZUb8jLF8ViabgNsE5TGg&#x2F;640?wx_fmt&#x3D;png">
 <meta property="og:image" content="https:&#x2F;&#x2F;mmbiz.qpic.cn&#x2F;mmbiz_png&#x2F;2BGWl1qPxib03CDpVphYxW5RooE4RdPCHYS6plBIr9hHA1UbhyoBENCV9IT8BgyeYP1tMxmyjibP45d1bZwMbaXw&#x2F;640?wx_fmt&#x3D;png">
 <meta property="og:image" content="https:&#x2F;&#x2F;mmbiz.qpic.cn&#x2F;mmbiz_png&#x2F;2BGWl1qPxib03CDpVphYxW5RooE4RdPCH3pxKicdNzp7VWuKibKSxpulI3aVuonA4s7L8cRPVpR9MeuBdbawbSS5w&#x2F;640?wx_fmt&#x3D;png">
-<meta property="og:updated_time" content="2020-02-22T06:03:17.965Z">
+<meta property="og:updated_time" content="2020-02-22T07:13:36.377Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https:&#x2F;&#x2F;mmbiz.qpic.cn&#x2F;mmbiz_png&#x2F;2BGWl1qPxib03CDpVphYxW5RooE4RdPCHzcQWmsLKfBxJibLnz9YIKubTXibwZMI43A6vAqXqviczF3XcUc7B0icNXg&#x2F;640?wx_fmt&#x3D;png">
   
@@ -171,10 +171,11 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="一、交代背景"><a href="#一、交代背景" class="headerlink" title="一、交代背景"></a>一、交代背景</h2><p>我这边有一个系统，提供一个 RPC 接口去发送各种信息（比如短信、邮件、微信）等等渠道。我这边的系统架构是这样的：</p>
-<p><img src="https://mmbiz.qpic.cn/mmbiz_png/2BGWl1qPxib03CDpVphYxW5RooE4RdPCHzcQWmsLKfBxJibLnz9YIKubTXibwZMI43A6vAqXqviczF3XcUc7B0icNXg/640?wx_fmt=png" alt="">系统架构</p>
+        <h2 id="一、交代背景"><a href="#一、交代背景" class="headerlink" title="一、交代背景"></a>一、交代背景</h2><p>记录一次线程安全问题的解决，我这边有一个系统，提供一个 RPC 接口去发送各种信息（比如短信、邮件、微信）等等渠道。</p>
 <a id="more"></a>
 
+<p>我这边的系统架构是这样的：</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/2BGWl1qPxib03CDpVphYxW5RooE4RdPCHzcQWmsLKfBxJibLnz9YIKubTXibwZMI43A6vAqXqviczF3XcUc7B0icNXg/640?wx_fmt=png" alt=""></p>
 <p>概括：service 系统提供一个 RPC 接口，别人调用我提供的接口，我在 service 系统中对这个消息进行判断、拼接等等业务逻辑，最后会将这个消息放到消息队列里边。sender 系统会消费消息队列里边的数据，然后发送消息</p>
 <p>例子：小王调用我们的 RPC 接口，想要发送邮件。我对邮件的参数进行判断和拼装成一个我这边定义好的 Task，将这个 Task 丢到消息队列里边。sender 系统消费这个 Task，调用<code>java.mail</code>的 API 完成发送邮件的功能。</p>
 <p>小王调用我们这个 RPC 接口，只要 service 系统把这个 task 丢到消息队列里边去，我们就返回 response 给小王。</p>

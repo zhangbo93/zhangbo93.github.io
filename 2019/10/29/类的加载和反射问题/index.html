@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>类的加载和反射问题.md | Jayus的个人博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="执行流程 流程：java开发工具可以将java代码编译为class字节码, 类加载器加载class字节码，将字节码里面的指令放到内存执行并且将数据动态分配到jvm内存模型中   类的加载流程：   将class文件中的二进制数据读取到内存中。 类、方法、静态内容放在方法区 堆上面创建一个Class对象用来封装存放存储在方法区上面的数据结构 类加载最终结果就是在堆产生class对象。当前对象提供访问">
+  <meta name="description" content="类加载的基本流程：java开发工具可以将java代码编译为class字节码,类加载器加载class字节码，将字节码里面的指令放到内存执行并且将数据动态分配到jvm内存模型中">
 <meta name="keywords" content="类的加载、反射">
 <meta property="og:type" content="article">
 <meta property="og:title" content="类的加载和反射问题.md">
 <meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2019&#x2F;10&#x2F;29&#x2F;%E7%B1%BB%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%92%8C%E5%8F%8D%E5%B0%84%E9%97%AE%E9%A2%98&#x2F;index.html">
 <meta property="og:site_name" content="Jayus的个人博客">
-<meta property="og:description" content="执行流程 流程：java开发工具可以将java代码编译为class字节码, 类加载器加载class字节码，将字节码里面的指令放到内存执行并且将数据动态分配到jvm内存模型中   类的加载流程：   将class文件中的二进制数据读取到内存中。 类、方法、静态内容放在方法区 堆上面创建一个Class对象用来封装存放存储在方法区上面的数据结构 类加载最终结果就是在堆产生class对象。当前对象提供访问">
+<meta property="og:description" content="类加载的基本流程：java开发工具可以将java代码编译为class字节码,类加载器加载class字节码，将字节码里面的指令放到内存执行并且将数据动态分配到jvm内存模型中">
 <meta property="og:locale" content="en">
 <meta property="og:image" content="f:&#x2F;youdao&#x2F;TP&#x2F;classloader.png">
 <meta property="og:image" content="f:&#x2F;youdao&#x2F;TP&#x2F;loadprocess.png">
 <meta property="og:image" content="f:&#x2F;youdao&#x2F;TP&#x2F;lifetime.png">
-<meta property="og:updated_time" content="2020-02-22T06:42:12.871Z">
+<meta property="og:updated_time" content="2020-02-22T07:14:39.171Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="f:&#x2F;youdao&#x2F;TP&#x2F;classloader.png">
   
@@ -169,11 +169,10 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h4 id="执行流程"><a href="#执行流程" class="headerlink" title="执行流程"></a>执行流程</h4><ul>
-<li><p>流程：java开发工具可以将java代码编译为class字节码,</p>
-<pre><code>类加载器加载class字节码，将字节码里面的指令放到内存执行并且将数据动态分配到jvm内存模型中</code></pre><p><img src="F:/youdao/TP/classloader.png" alt="image"></p>
-</li>
-</ul>
+        <p>类加载的基本流程：java开发工具可以将java代码编译为class字节码,类加载器加载class字节码，将字节码里面的指令放到内存执行并且将数据动态分配到jvm内存模型中</p>
+<a id="more"></a>
+
+<p> <img src="F:/youdao/TP/classloader.png" alt="image"></p>
 <h4 id="类的加载流程："><a href="#类的加载流程：" class="headerlink" title="类的加载流程："></a>类的加载流程：</h4><p> <img src="F:/youdao/TP/loadprocess.png" alt="image"></p>
 <ul>
 <li>将class文件中的二进制数据读取到内存中。<ul>
@@ -506,7 +505,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#执行流程"><span class="toc-number">1.</span> <span class="toc-text">执行流程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#类的加载流程："><span class="toc-number">2.</span> <span class="toc-text">类的加载流程：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#类的生命周期"><span class="toc-number">3.</span> <span class="toc-text">类的生命周期</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#类加载器（3类）"><span class="toc-number">4.</span> <span class="toc-text">类加载器（3类）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#反射"><span class="toc-number">5.</span> <span class="toc-text">反射</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#静态加载和动态加载"><span class="toc-number">5.1.</span> <span class="toc-text">静态加载和动态加载</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#类的获取方式"><span class="toc-number">5.2.</span> <span class="toc-text">类的获取方式</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#反射的操作"><span class="toc-number">5.3.</span> <span class="toc-text">反射的操作</span></a></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#类的加载流程："><span class="toc-number">1.</span> <span class="toc-text">类的加载流程：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#类的生命周期"><span class="toc-number">2.</span> <span class="toc-text">类的生命周期</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#类加载器（3类）"><span class="toc-number">3.</span> <span class="toc-text">类加载器（3类）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#反射"><span class="toc-number">4.</span> <span class="toc-text">反射</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#静态加载和动态加载"><span class="toc-number">4.1.</span> <span class="toc-text">静态加载和动态加载</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#类的获取方式"><span class="toc-number">4.2.</span> <span class="toc-text">类的获取方式</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#反射的操作"><span class="toc-number">4.3.</span> <span class="toc-text">反射的操作</span></a></li></ol></li></ol>
                     </div>
                 </span>
             </div>
