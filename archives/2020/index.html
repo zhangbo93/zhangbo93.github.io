@@ -6,24 +6,14 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>记一次线程安全问题 | Jayus的个人博客</title>
+  <title>Archives: 2020 | Jayus的个人博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="一、交代背景记录一次线程安全问题的解决，我这边有一个系统，提供一个 RPC 接口去发送各种信息（比如短信、邮件、微信）等等渠道。">
-<meta name="keywords" content="线程安全">
-<meta property="og:type" content="article">
-<meta property="og:title" content="记一次线程安全问题">
-<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2019&#x2F;07&#x2F;21&#x2F;%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98&#x2F;index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Jayus的个人博客">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;archives&#x2F;2020&#x2F;index.html">
 <meta property="og:site_name" content="Jayus的个人博客">
-<meta property="og:description" content="一、交代背景记录一次线程安全问题的解决，我这边有一个系统，提供一个 RPC 接口去发送各种信息（比如短信、邮件、微信）等等渠道。">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="https:&#x2F;&#x2F;mmbiz.qpic.cn&#x2F;mmbiz_png&#x2F;2BGWl1qPxib03CDpVphYxW5RooE4RdPCHzcQWmsLKfBxJibLnz9YIKubTXibwZMI43A6vAqXqviczF3XcUc7B0icNXg&#x2F;640?wx_fmt&#x3D;png">
-<meta property="og:image" content="https:&#x2F;&#x2F;mmbiz.qpic.cn&#x2F;mmbiz_png&#x2F;2BGWl1qPxib03CDpVphYxW5RooE4RdPCHXD5DC6jU8rwf9DAtBfD6rB3bkmHU2XUHibexBzGtiabovX88wjgPQ9tw&#x2F;640?wx_fmt&#x3D;png">
-<meta property="og:image" content="https:&#x2F;&#x2F;mmbiz.qpic.cn&#x2F;mmbiz_png&#x2F;2BGWl1qPxib03CDpVphYxW5RooE4RdPCHbwdL6JHXOQvjlvVH7ek4p239G2OhfJyqC43ZUb8jLF8ViabgNsE5TGg&#x2F;640?wx_fmt&#x3D;png">
-<meta property="og:image" content="https:&#x2F;&#x2F;mmbiz.qpic.cn&#x2F;mmbiz_png&#x2F;2BGWl1qPxib03CDpVphYxW5RooE4RdPCHYS6plBIr9hHA1UbhyoBENCV9IT8BgyeYP1tMxmyjibP45d1bZwMbaXw&#x2F;640?wx_fmt&#x3D;png">
-<meta property="og:image" content="https:&#x2F;&#x2F;mmbiz.qpic.cn&#x2F;mmbiz_png&#x2F;2BGWl1qPxib03CDpVphYxW5RooE4RdPCH3pxKicdNzp7VWuKibKSxpulI3aVuonA4s7L8cRPVpR9MeuBdbawbSS5w&#x2F;640?wx_fmt&#x3D;png">
-<meta property="og:updated_time" content="2020-02-22T07:21:56.155Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https:&#x2F;&#x2F;mmbiz.qpic.cn&#x2F;mmbiz_png&#x2F;2BGWl1qPxib03CDpVphYxW5RooE4RdPCHzcQWmsLKfBxJibLnz9YIKubTXibwZMI43A6vAqXqviczF3XcUc7B0icNXg&#x2F;640?wx_fmt&#x3D;png">
   
     <link rel="alternative" href="/atom.xml" title="Jayus的个人博客" type="application/atom+xml">
   
@@ -151,265 +141,174 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-记一次线程安全问题" class="article article-type-post " itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+            
   
-    <h1 class="article-title" itemprop="name">
-      记一次线程安全问题
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2020" class="archive-year">2020</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2020/03/29/%E8%A7%A3%E6%9E%90volatile%E5%85%B3%E9%94%AE%E5%AD%97/" class="archive-article-date">
+  	<time datetime="2020-03-29T11:12:14.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-29</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2020/03/29/%E8%A7%A3%E6%9E%90volatile%E5%85%B3%E9%94%AE%E5%AD%97/">解析volatile关键字</a>
     </h1>
   
 
-        
-        <a href="/2019/07/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/" class="archive-article-date">
-  	<time datetime="2019-07-21T07:28:04.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-21</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="一、交代背景"><a href="#一、交代背景" class="headerlink" title="一、交代背景"></a>一、交代背景</h2><p>记录一次线程安全问题的解决，我这边有一个系统，提供一个 RPC 接口去发送各种信息（比如短信、邮件、微信）等等渠道。</p>
-<a id="more"></a>
-
-<p>我这边的系统架构是这样的：</p>
-<p><img src="https://mmbiz.qpic.cn/mmbiz_png/2BGWl1qPxib03CDpVphYxW5RooE4RdPCHzcQWmsLKfBxJibLnz9YIKubTXibwZMI43A6vAqXqviczF3XcUc7B0icNXg/640?wx_fmt=png" alt=""></p>
-<p>概括：service 系统提供一个 RPC 接口，别人调用我提供的接口，我在 service 系统中对这个消息进行判断、拼接等等业务逻辑，最后会将这个消息放到消息队列里边。sender 系统会消费消息队列里边的数据，然后发送消息</p>
-<p>例子：小王调用我们的 RPC 接口，想要发送邮件。我对邮件的参数进行判断和拼装成一个我这边定义好的 Task，将这个 Task 丢到消息队列里边。sender 系统消费这个 Task，调用<code>java.mail</code>的 API 完成发送邮件的功能。</p>
-<p>小王调用我们这个 RPC 接口，只要 service 系统把这个 task 丢到消息队列里边去，我们就返回 response 给小王。</p>
-<ul>
-<li>只要这个 task 放到了消息队列里边，我们就返回 success。所以有的时候，小王会问：“我这明明返回是 success 啊，怎么我的邮件没发出去呢”  ——(<strong>异步</strong>)</li>
-</ul>
-<p>每发送一封邮件，我们都会将这封邮件的信息入库（保存在 MySQL 中），在 MySQL 中我们可以<strong>得知这封邮件的发送时间，发送状态</strong>等等。</p>
-<p>而小王的这些邮件又十分在意是否成功发送出去了，如果<strong>发送失败了他那边需要重发</strong>。于是，他监听我们 DB 的 binlog，根据 binlog 的信息来判断是否需要重发。</p>
-<p>由于种种的原因，小王希望调用我们 RPC 接口的时候就能拿到一个<strong>唯一的标识</strong>好让他去判断这封邮件是成功还是失败</p>
-<ul>
-<li>显然，入库的 Email ID 是不可能的（因为他调我们 RPC 接口，我们将 Task 放到消息队列就返回了。此时 sender 系统还没消费呢)</li>
-</ul>
-<p>于是，我们这边打算在 service 系统生成一个 messageId，然后返回给他，将这个 messageId 绑定到 Task 里边，一直到入库。</p>
-<p><img src="https://mmbiz.qpic.cn/mmbiz_png/2BGWl1qPxib03CDpVphYxW5RooE4RdPCHXD5DC6jU8rwf9DAtBfD6rB3bkmHU2XUHibexBzGtiabovX88wjgPQ9tw/640?wx_fmt=png" alt="">流程图</p>
-<h2 id="二、上钩"><a href="#二、上钩" class="headerlink" title="二、上钩"></a>二、上钩</h2><p>上面确定好需求和思路之后，我这边就去看返回给小王的 response 对象，一看，发现<strong>已经有 msgId</strong> 字段了</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">public class SendResponse &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">    &#x2F;&#x2F; 错误码</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">    private int errCode;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">    &#x2F;&#x2F; 错误信息</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">    private String errInfo;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">    &#x2F;&#x2F; messageId</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">    private long msgId;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
-
-<p>我搜了一下这个字段的信息<code>ctrl + shift + f</code>，发现这 msgId 没有被用到啊。一想，这刚好，我来用了。我看了一下用法，发现这边不是直接使用 SendResponse 的，而是在外面包了一个枚举类，代码大概如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">public enum Response &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">    SUCCESS(1, &quot;success&quot;),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">    PARAM_MISSING(2, &quot;param is missing&quot;),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">    INVALID_xxxx(3, &quot;xxxx is invalid&quot;),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">    INVALID_xxxx(4, &quot;xxxx is invalid&quot;),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">    private SendResponse sendResponse;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">    private Response(int errCode, String errInfo) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">        sendResponse &#x3D; new SendResponse();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">        sendResponse.setMsgId(0);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">        sendResponse.setErrCode(errCode);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">        sendResponse.setErrInfo(errInfo);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">    public SendResponse getSendResponse() &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">        return sendResponse;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
-
-<p>有了枚举使用起来就很简单了，比如我发现小王某个参数传进来有问题，我反手就是：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">Response.PARAM_ERROR</span></pre></td></tr></table></figure>
-
-<p>service 系统主要做了两件事</p>
-<ul>
-<li><p>判断参数 / 类型，各种业务逻辑有没有问题，将小王带过来的参数封装成 Task 对象</p>
-</li>
-<li><p>将 Task 对象放到消息队列里边</p>
-</li>
-</ul>
-<p><img src="https://mmbiz.qpic.cn/mmbiz_png/2BGWl1qPxib03CDpVphYxW5RooE4RdPCHbwdL6JHXOQvjlvVH7ek4p239G2OhfJyqC43ZUb8jLF8ViabgNsE5TGg/640?wx_fmt=png" alt="">两个任务</p>
-<p>要明确的是：等到整一个调用链结束（将 Task 对象放到消息队列中），才会将 sendResponse 对象返回出去。而又因为可能要判断的地方有点多，所以我们这边是这样设计了一个 <strong>Map 来存储数据，这个 Map 贯穿整条链路</strong>：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 首先将sendResponse默认设置为success，也就是代码如下：</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">map.put(&quot;sendResponse&quot;,Response.SUCCESS);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 如果中途某个地方可能有问题了，那我们将Map中sendResponse进行修改</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">map.put(&quot;sendResponse&quot;,Response.ERROR);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 等整条链路完成，从Map拿出sendResponse返回</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">return map.get(&quot;sendResponse&quot;);</span></pre></td></tr></table></figure>
-
-<p>于是我要做的就是：<strong>在将 SendResponse 返回之前，我生成一个唯一的 msgId，并插入到 SendResponse 对象里边就好了</strong>。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">Response.getSendResponse().setMsgid(uuid);</span></pre></td></tr></table></figure>
-
-<p><img src="https://mmbiz.qpic.cn/mmbiz_png/2BGWl1qPxib03CDpVphYxW5RooE4RdPCHYS6plBIr9hHA1UbhyoBENCV9IT8BgyeYP1tMxmyjibP45d1bZwMbaXw/640?wx_fmt=png" alt="">在返回 sendResponse 之前插入 msgId 就好了</p>
-<p>这个需求完成得非常快，简单测试了一下也没毛病，就果断上线了。小王用了一阵子也没说有什么问题，于是这个需求就交付了。</p>
-<h2 id="三、出现问题"><a href="#三、出现问题" class="headerlink" title="三、出现问题"></a>三、出现问题</h2><p>昨天，小王告诉我：“我这边邮件发送失败啦，有 msgId，看下是什么原因造成的 “</p>
-<p>于是我就去捞线上的日志，发现根据他给出的 msgId，我这边打出的日志都不是发送邮件的（而是其他 Task 的日志）。<strong>我这就慌了，难道我们这个系统出问题了？</strong></p>
-<ul>
-<li>心理活动：msgId 能够唯一标识这条 Task，而小王发给我的 msgId，却是别的 Task 的内容。是不是出大问题啦 (错乱消费？数据全乱了？)，惊慌失措</li>
-</ul>
-<p>然后，他那边继续补充：</p>
-<p><img src="https://mmbiz.qpic.cn/mmbiz_png/2BGWl1qPxib03CDpVphYxW5RooE4RdPCH3pxKicdNzp7VWuKibKSxpulI3aVuonA4s7L8cRPVpR9MeuBdbawbSS5w/640?wx_fmt=png" alt="">继续补充信息</p>
-<p>之后发现邮件是发送成功的，但是他拿到<strong>部分</strong>的 msgId 是别的 Task 的，不是邮件的。于是只能先比对剩下的邮件是否有问题，再看看 MsgId 是什么原因。</p>
-<h2 id="四、寻找问题"><a href="#四、寻找问题" class="headerlink" title="四、寻找问题"></a>四、寻找问题</h2><p>现有的条件是：</p>
-<ul>
-<li><p>那批邮箱发送是成功的</p>
-</li>
-<li><p>小王拿到了别的 Task 的 msgId</p>
-</li>
-</ul>
-<p>所以，判断系统是没问题的，只是 msgId 在并发的过程中出了问题（拿到其他 Task 的 msgId 了）</p>
-<p>于是我就去找原因啦，在查代码的时候发现前同事还在 Service 系统中的某个类留了一个注解<code>@NotThreadSafe</code>。我就觉得肯定是中途哪个地方我没注意到，导致小王拿到了其他 Task 的 msgId。</p>
-<p>人肉 Debug 了一个午休的时间还是没找出来：每个线程都独有一份的操作对象，对象的属性都没有逸出 (都在方法内部操作)，跟着整块链路一直传递，直至链路结束。看似没啥毛病啊，怀疑是不是方向错了。</p>
-<p>后来，一想，我应该关注 msgId 生成以及可能会变动的地方就好了呀。才发现，项目里边用的是<strong>枚举</strong>啊！</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 首先将sendResponse默认设置为success，也就是代码如下：</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">map.put(&quot;sendResponse&quot;,Response.SUCCESS);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 如果中途某个地方可能有问题了，那我们将Map中sendResponse进行修改</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">map.put(&quot;sendResponse&quot;,Response.ERROR);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 把response的msgId的值设置为当前Task绑定的值</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">map.get(&quot;sendResponse&quot;).setMsgid(uuid);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 等整条链路完成，从Map拿出sendResponse返回</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">return map.get(&quot;sendResponse&quot;);</span></pre></td></tr></table></figure>
-
-<p><strong>醒悟</strong>：</p>
-<ul>
-<li><p>现在我有 50 个线程，每个线程在处理数据的时候都会有一个默认的 sendResponse 对象，这个对象是用枚举来标识<code>Response.SUCCESS</code>。所以，这 50 个线程都<strong>共享</strong>着这个 sendResponse 对象</p>
-</li>
-<li><p>50 个线程共享着这个 sendResponse 对象，每个线程都可以修改 sendResponse 里边的 msgId 属性，这就自然是线程不安全的。</p>
-</li>
-<li><p>所以小王能拿到其他 Task 的 msgId（小王的线程设置完 msgId 之后，还没返回，三歪的线程又更改了一次 msgId，导致小王拿到三歪的 msgId 了）</p>
-</li>
-</ul>
-<hr>
-<p>总结：</p>
-<ul>
-<li><p>终于知道为啥当初前同事在代码上保留了 msgId 属性，但是没有使用这个属性。</p>
-</li>
-<li><p>使用枚举就不应该带<strong>有状态的属性</strong> (能修改、可变的属性)</p>
-</li>
-</ul>
-
-      
-
-      
-        <div class="page-reward">
-          <a href="javascript:;" target="_blank" rel="noopener" class="page-reward-btn tooltip-top">
-            <div class="tooltip tooltip-east">
-            <span class="tooltip-item">
-              赏
-            </span>
-            <span class="tooltip-content">
-              <span class="tooltip-text">
-                <span class="tooltip-inner">
-                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
-                  <div class="reward-box">
-                    
-                    
-                  </div>
-                </span>
-              </span>
-            </span>
-          </div>
-          </a>
-        </div>
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" target="_blank" rel="noopener" class="js-tag article-tag-list-link color5">线程安全</a>
+        			<a href="javascript:void(0)" target="_blank" rel="noopener" class="js-tag article-tag-list-link color4">volatile</a>
         		</li>
       		
 		</ul>
 	</div>
 
-      
+          
 
-      
-
-      
-        
-<div class="share-btn share-icons tooltip-left">
-  <div class="tooltip tooltip-east">
-    <span class="tooltip-item">
-      <a href="javascript:;" target="_blank" rel="noopener" class="share-sns share-outer">
-        <i class="icon icon-share"></i>
-      </a>
-    </span>
-    <span class="tooltip-content">
-      <div class="share-wrap">
-        <div class="share-icons">
-          <a class="weibo share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="weibo">
-            <i class="icon icon-weibo"></i>
-          </a>
-          <a class="weixin share-sns wxFab" href="javascript:;" target="_blank" rel="noopener" data-type="weixin">
-            <i class="icon icon-weixin"></i>
-          </a>
-          <a class="qq share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="qq">
-            <i class="icon icon-qq"></i>
-          </a>
-          <a class="douban share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="douban">
-            <i class="icon icon-douban"></i>
-          </a>
-          <a class="qzone share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="qzone">
-            <i class="icon icon-qzone"></i>
-          </a>
-          <a class="facebook share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="facebook">
-            <i class="icon icon-facebook"></i>
-          </a>
-          <a class="twitter share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="twitter">
-            <i class="icon icon-twitter"></i>
-          </a>
-          <a class="google share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="google">
-            <i class="icon icon-google"></i>
-          </a>
         </div>
-      </div>
-    </span>
-  </div>
-</div>
-
-<div class="page-modal wx-share js-wx-box">
-    <a class="close js-modal-close" href="javascript:;" target="_blank" rel="noopener"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/07/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/" alt="微信分享二维码">
-    </div>
-</div>
-
-<div class="mask js-mask"></div>
-      
-      <div class="clearfix"></div>
-    </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
   
-<nav id="article-nav">
-  
-    <a href="/2019/10/12/%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AEntp%E6%97%B6%E9%97%B4%E5%90%8C%E6%AD%A5%E6%9C%8D%E5%8A%A1/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          集群配置ntp时间同步服务
-        
-      </div>
-    </a>
-  
-  
-</nav>
-
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" target="_blank" rel="noopener" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2020/03/26/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E7%90%86%E8%A7%A3/" class="archive-article-date">
+  	<time datetime="2020-03-26T11:54:43.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-26</time>
+</a>
         </div>
-        
-        
-        <div class="toc-container tooltip-left">
-            <i class="icon-font icon-category"></i>
-            <div class="tooltip tooltip-east">
-                <span class="tooltip-item">
-                </span>
-                <span class="tooltip-content">
-                    <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、交代背景"><span class="toc-number">1.</span> <span class="toc-text">一、交代背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、上钩"><span class="toc-number">2.</span> <span class="toc-text">二、上钩</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、出现问题"><span class="toc-number">3.</span> <span class="toc-text">三、出现问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、寻找问题"><span class="toc-number">4.</span> <span class="toc-text">四、寻找问题</span></a></li></ol>
-                    </div>
-                </span>
-            </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2020/03/26/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E7%90%86%E8%A7%A3/">线程池的理解</a>
+    </h1>
+  
+
+        <div class="article-info info-on-right">
+          
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" target="_blank" rel="noopener" class="js-tag article-tag-list-link color4">线程池</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+          
+
         </div>
-        
-    </div>
-</aside>
+        <div class="clearfix"></div>
+    </header>
+  </div>
+</article>
+  
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2020/02/29/%E7%B1%BB%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%92%8C%E5%8F%8D%E5%B0%84%E9%97%AE%E9%A2%98/" class="archive-article-date">
+  	<time datetime="2020-02-29T12:12:14.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-29</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2020/02/29/%E7%B1%BB%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%92%8C%E5%8F%8D%E5%B0%84%E9%97%AE%E9%A2%98/">类的加载和反射问题</a>
+    </h1>
+  
 
+        <div class="article-info info-on-right">
+          
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" target="_blank" rel="noopener" class="js-tag article-tag-list-link color3">类的加载、反射</a>
+        		</li>
+      		
+		</ul>
+	</div>
 
+          
 
+        </div>
+        <div class="clearfix"></div>
+    </header>
+  </div>
+</article>
+  
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2020/02/26/RabbitMQ%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%B6%88%E6%81%AF%E5%A4%84%E7%90%86/" class="archive-article-date">
+  	<time datetime="2020-02-26T13:13:45.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-26</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2020/02/26/RabbitMQ%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%B6%88%E6%81%AF%E5%A4%84%E7%90%86/">RabbitMQ的原理和消息处理</a>
+    </h1>
+  
+
+        <div class="article-info info-on-right">
+          
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" target="_blank" rel="noopener" class="js-tag article-tag-list-link color4">RabbitMQ</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+          
+
+        </div>
+        <div class="clearfix"></div>
+    </header>
+  </div>
+</article>
   
   
+    </div></section>
   
 
-  
-
-  
-
-  
+    
 
 
           </div>
@@ -432,8 +331,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: true,
-		isArchive: false,
+		isPost: false,
+		isArchive: true,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

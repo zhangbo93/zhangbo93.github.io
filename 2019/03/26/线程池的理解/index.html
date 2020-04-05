@@ -6,24 +6,21 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>记一次线程安全问题 | Jayus的个人博客</title>
+  <title>线程池的理解 | Jayus的个人博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="一、交代背景记录一次线程安全问题的解决，我这边有一个系统，提供一个 RPC 接口去发送各种信息（比如短信、邮件、微信）等等渠道。">
-<meta name="keywords" content="线程安全">
+  <meta name="description" content="线程池主要是控制运行线程的数量，将待处理任务放到等待队列，然后创建线程执行这些任务。如果超过了最大线程数，则等待。">
+<meta name="keywords" content="线程池">
 <meta property="og:type" content="article">
-<meta property="og:title" content="记一次线程安全问题">
-<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2019&#x2F;07&#x2F;21&#x2F;%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98&#x2F;index.html">
+<meta property="og:title" content="线程池的理解">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2019&#x2F;03&#x2F;26&#x2F;%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E7%90%86%E8%A7%A3&#x2F;index.html">
 <meta property="og:site_name" content="Jayus的个人博客">
-<meta property="og:description" content="一、交代背景记录一次线程安全问题的解决，我这边有一个系统，提供一个 RPC 接口去发送各种信息（比如短信、邮件、微信）等等渠道。">
+<meta property="og:description" content="线程池主要是控制运行线程的数量，将待处理任务放到等待队列，然后创建线程执行这些任务。如果超过了最大线程数，则等待。">
 <meta property="og:locale" content="en">
-<meta property="og:image" content="https:&#x2F;&#x2F;mmbiz.qpic.cn&#x2F;mmbiz_png&#x2F;2BGWl1qPxib03CDpVphYxW5RooE4RdPCHzcQWmsLKfBxJibLnz9YIKubTXibwZMI43A6vAqXqviczF3XcUc7B0icNXg&#x2F;640?wx_fmt&#x3D;png">
-<meta property="og:image" content="https:&#x2F;&#x2F;mmbiz.qpic.cn&#x2F;mmbiz_png&#x2F;2BGWl1qPxib03CDpVphYxW5RooE4RdPCHXD5DC6jU8rwf9DAtBfD6rB3bkmHU2XUHibexBzGtiabovX88wjgPQ9tw&#x2F;640?wx_fmt&#x3D;png">
-<meta property="og:image" content="https:&#x2F;&#x2F;mmbiz.qpic.cn&#x2F;mmbiz_png&#x2F;2BGWl1qPxib03CDpVphYxW5RooE4RdPCHbwdL6JHXOQvjlvVH7ek4p239G2OhfJyqC43ZUb8jLF8ViabgNsE5TGg&#x2F;640?wx_fmt&#x3D;png">
-<meta property="og:image" content="https:&#x2F;&#x2F;mmbiz.qpic.cn&#x2F;mmbiz_png&#x2F;2BGWl1qPxib03CDpVphYxW5RooE4RdPCHYS6plBIr9hHA1UbhyoBENCV9IT8BgyeYP1tMxmyjibP45d1bZwMbaXw&#x2F;640?wx_fmt&#x3D;png">
-<meta property="og:image" content="https:&#x2F;&#x2F;mmbiz.qpic.cn&#x2F;mmbiz_png&#x2F;2BGWl1qPxib03CDpVphYxW5RooE4RdPCH3pxKicdNzp7VWuKibKSxpulI3aVuonA4s7L8cRPVpR9MeuBdbawbSS5w&#x2F;640?wx_fmt&#x3D;png">
-<meta property="og:updated_time" content="2020-02-22T07:21:56.155Z">
+<meta property="og:image" content="https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;MaJesTySA&#x2F;JVM-JUC-Core&#x2F;master&#x2F;imgs&#x2F;threadPool.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;MaJesTySA&#x2F;JVM-JUC-Core&#x2F;master&#x2F;imgs&#x2F;threadPoolProcedure.png">
+<meta property="og:updated_time" content="2020-04-05T08:06:42.351Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https:&#x2F;&#x2F;mmbiz.qpic.cn&#x2F;mmbiz_png&#x2F;2BGWl1qPxib03CDpVphYxW5RooE4RdPCHzcQWmsLKfBxJibLnz9YIKubTXibwZMI43A6vAqXqviczF3XcUc7B0icNXg&#x2F;640?wx_fmt&#x3D;png">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;MaJesTySA&#x2F;JVM-JUC-Core&#x2F;master&#x2F;imgs&#x2F;threadPool.png">
   
     <link rel="alternative" href="/atom.xml" title="Jayus的个人博客" type="application/atom+xml">
   
@@ -151,108 +148,103 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-记一次线程安全问题" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-线程池的理解" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      记一次线程安全问题
+      线程池的理解
     </h1>
   
 
         
-        <a href="/2019/07/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/" class="archive-article-date">
-  	<time datetime="2019-07-21T07:28:04.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-21</time>
+        <a href="/2019/03/26/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E7%90%86%E8%A7%A3/" class="archive-article-date">
+  	<time datetime="2019-03-26T11:54:43.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-03-26</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="一、交代背景"><a href="#一、交代背景" class="headerlink" title="一、交代背景"></a>一、交代背景</h2><p>记录一次线程安全问题的解决，我这边有一个系统，提供一个 RPC 接口去发送各种信息（比如短信、邮件、微信）等等渠道。</p>
+        <p>线程池主要是控制运行线程的数量，将待处理任务放到等待队列，然后创建线程执行这些任务。如果超过了最大线程数，则等待。</p>
 <a id="more"></a>
 
-<p>我这边的系统架构是这样的：</p>
-<p><img src="https://mmbiz.qpic.cn/mmbiz_png/2BGWl1qPxib03CDpVphYxW5RooE4RdPCHzcQWmsLKfBxJibLnz9YIKubTXibwZMI43A6vAqXqviczF3XcUc7B0icNXg/640?wx_fmt=png" alt=""></p>
-<p>概括：service 系统提供一个 RPC 接口，别人调用我提供的接口，我在 service 系统中对这个消息进行判断、拼接等等业务逻辑，最后会将这个消息放到消息队列里边。sender 系统会消费消息队列里边的数据，然后发送消息</p>
-<p>例子：小王调用我们的 RPC 接口，想要发送邮件。我对邮件的参数进行判断和拼装成一个我这边定义好的 Task，将这个 Task 丢到消息队列里边。sender 系统消费这个 Task，调用<code>java.mail</code>的 API 完成发送邮件的功能。</p>
-<p>小王调用我们这个 RPC 接口，只要 service 系统把这个 task 丢到消息队列里边去，我们就返回 response 给小王。</p>
-<ul>
-<li>只要这个 task 放到了消息队列里边，我们就返回 success。所以有的时候，小王会问：“我这明明返回是 success 啊，怎么我的邮件没发出去呢”  ——(<strong>异步</strong>)</li>
-</ul>
-<p>每发送一封邮件，我们都会将这封邮件的信息入库（保存在 MySQL 中），在 MySQL 中我们可以<strong>得知这封邮件的发送时间，发送状态</strong>等等。</p>
-<p>而小王的这些邮件又十分在意是否成功发送出去了，如果<strong>发送失败了他那边需要重发</strong>。于是，他监听我们 DB 的 binlog，根据 binlog 的信息来判断是否需要重发。</p>
-<p>由于种种的原因，小王希望调用我们 RPC 接口的时候就能拿到一个<strong>唯一的标识</strong>好让他去判断这封邮件是成功还是失败</p>
-<ul>
-<li>显然，入库的 Email ID 是不可能的（因为他调我们 RPC 接口，我们将 Task 放到消息队列就返回了。此时 sender 系统还没消费呢)</li>
-</ul>
-<p>于是，我们这边打算在 service 系统生成一个 messageId，然后返回给他，将这个 messageId 绑定到 Task 里边，一直到入库。</p>
-<p><img src="https://mmbiz.qpic.cn/mmbiz_png/2BGWl1qPxib03CDpVphYxW5RooE4RdPCHXD5DC6jU8rwf9DAtBfD6rB3bkmHU2XUHibexBzGtiabovX88wjgPQ9tw/640?wx_fmt=png" alt="">流程图</p>
-<h2 id="二、上钩"><a href="#二、上钩" class="headerlink" title="二、上钩"></a>二、上钩</h2><p>上面确定好需求和思路之后，我这边就去看返回给小王的 response 对象，一看，发现<strong>已经有 msgId</strong> 字段了</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">public class SendResponse &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">    &#x2F;&#x2F; 错误码</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">    private int errCode;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">    &#x2F;&#x2F; 错误信息</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">    private String errInfo;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">    &#x2F;&#x2F; messageId</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">    private long msgId;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+<p><strong>优点</strong>：</p>
+<ol>
+<li>线程复用：不用一直new新线程，重复利用已经创建的线程来降低线程的创建和销毁开销，节省系统资源。</li>
+<li>提高响应速度：当任务达到时，不用创建新的线程，直接利用线程池的线程。</li>
+<li>管理线程：可以控制最大并发数，控制线程的创建等。</li>
+</ol>
+<p><strong>体系</strong>：<code>Executor</code>→<code>ExecutorService</code>→<code>AbstractExecutorService</code>→<code>ThreadPoolExecutor</code>。<code>ThreadPoolExecutor</code>是线程池创建的核心类。类似<code>Arrays</code>、<code>Collections</code>工具类，<code>Executor</code>也有自己的工具类<code>Executors</code>。</p>
+<h2 id="线程池三种常用创建方式"><a href="#线程池三种常用创建方式" class="headerlink" title="线程池三种常用创建方式"></a>线程池三种常用创建方式</h2><p><strong>newFixedThreadPool</strong>：使用<code>LinkedBlockingQueue</code>实现，==定长线程池==。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ExecutorService <span class="title">newFixedThreadPool</span><span class="params">(<span class="keyword">int</span> nThreads)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> ThreadPoolExecutor(nThreads, nThreads,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">                                  <span class="number">0L</span>, TimeUnit.MILLISECONDS,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">                                  <span class="keyword">new</span> LinkedBlockingQueue&lt;Runnable&gt;());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
 
-<p>我搜了一下这个字段的信息<code>ctrl + shift + f</code>，发现这 msgId 没有被用到啊。一想，这刚好，我来用了。我看了一下用法，发现这边不是直接使用 SendResponse 的，而是在外面包了一个枚举类，代码大概如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">public enum Response &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">    SUCCESS(1, &quot;success&quot;),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">    PARAM_MISSING(2, &quot;param is missing&quot;),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">    INVALID_xxxx(3, &quot;xxxx is invalid&quot;),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">    INVALID_xxxx(4, &quot;xxxx is invalid&quot;),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">    private SendResponse sendResponse;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">    private Response(int errCode, String errInfo) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">        sendResponse &#x3D; new SendResponse();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">        sendResponse.setMsgId(0);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">        sendResponse.setErrCode(errCode);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">        sendResponse.setErrInfo(errInfo);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">    public SendResponse getSendResponse() &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">        return sendResponse;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+<p><strong>newSingleThreadExecutor</strong>：使用<code>LinkedBlockingQueue</code>实现，==一池只有一个线程。==</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ExecutorService <span class="title">newSingleThreadExecutor</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> FinalizableDelegatedExecutorService(<span class="keyword">new</span> ThreadPoolExecutor(<span class="number">1</span>, <span class="number">1</span>,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">                                    <span class="number">0L</span>, TimeUnit.MILLISECONDS,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">                                    <span class="keyword">new</span> LinkedBlockingQueue&lt;Runnable&gt;()));</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
 
-<p>有了枚举使用起来就很简单了，比如我发现小王某个参数传进来有问题，我反手就是：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">Response.PARAM_ERROR</span></pre></td></tr></table></figure>
+<p><strong>newCachedThreadPool</strong>：使用<code>SynchronousQueue</code>实现，==变长线程池。==</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ExecutorService <span class="title">newCachedThreadPool</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> ThreadPoolExecutor(<span class="number">0</span>, Integer.MAX_VALUE,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">                                 <span class="number">60L</span>, TimeUnit.SECONDS,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">                                 <span class="keyword">new</span> SynchronousQueue&lt;Runnable&gt;());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
 
-<p>service 系统主要做了两件事</p>
-<ul>
-<li><p>判断参数 / 类型，各种业务逻辑有没有问题，将小王带过来的参数封装成 Task 对象</p>
-</li>
-<li><p>将 Task 对象放到消息队列里边</p>
-</li>
-</ul>
-<p><img src="https://mmbiz.qpic.cn/mmbiz_png/2BGWl1qPxib03CDpVphYxW5RooE4RdPCHbwdL6JHXOQvjlvVH7ek4p239G2OhfJyqC43ZUb8jLF8ViabgNsE5TGg/640?wx_fmt=png" alt="">两个任务</p>
-<p>要明确的是：等到整一个调用链结束（将 Task 对象放到消息队列中），才会将 sendResponse 对象返回出去。而又因为可能要判断的地方有点多，所以我们这边是这样设计了一个 <strong>Map 来存储数据，这个 Map 贯穿整条链路</strong>：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 首先将sendResponse默认设置为success，也就是代码如下：</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">map.put(&quot;sendResponse&quot;,Response.SUCCESS);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 如果中途某个地方可能有问题了，那我们将Map中sendResponse进行修改</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">map.put(&quot;sendResponse&quot;,Response.ERROR);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 等整条链路完成，从Map拿出sendResponse返回</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">return map.get(&quot;sendResponse&quot;);</span></pre></td></tr></table></figure>
+<h2 id="线程池创建的七个参数"><a href="#线程池创建的七个参数" class="headerlink" title="线程池创建的七个参数"></a>线程池创建的七个参数</h2><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>意义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>corePoolSize</td>
+<td>线程池常驻核心线程数</td>
+</tr>
+<tr>
+<td>maximumPoolSize</td>
+<td>能够容纳的最大线程数</td>
+</tr>
+<tr>
+<td>keepAliveTime</td>
+<td>空闲线程存活时间</td>
+</tr>
+<tr>
+<td>unit</td>
+<td>存活时间单位</td>
+</tr>
+<tr>
+<td>workQueue</td>
+<td>存放提交但未执行任务的队列</td>
+</tr>
+<tr>
+<td>threadFactory</td>
+<td>创建线程的工厂类</td>
+</tr>
+<tr>
+<td>handler</td>
+<td>等待队列满后的拒绝策略</td>
+</tr>
+</tbody></table>
+<p><strong>理解</strong>：线程池的创建参数，就像一个<strong>银行</strong>。</p>
+<p><code>corePoolSize</code>就像银行的“<strong>当值窗口</strong>“，比如今天有<strong>2位柜员</strong>在受理<strong>客户请求</strong>（任务）。如果超过2个客户，那么新的客户就会在<strong>等候区</strong>（等待队列<code>workQueue</code>）等待。当<strong>等候区</strong>也满了，这个时候就要开启“<strong>加班窗口</strong>”，让其它3位柜员来加班，此时达到<strong>最大窗口</strong><code>maximumPoolSize</code>，为5个。如果开启了所有窗口，等候区依然满员，此时就应该启动”<strong>拒绝策略</strong>“<code>handler</code>，告诉不断涌入的客户，叫他们不要进入，已经爆满了。由于不再涌入新客户，办完事的客户增多，窗口开始空闲，这个时候就通过<code>keepAlivetTime</code>将多余的3个”加班窗口“取消，恢复到2个”当值窗口“。</p>
+<h2 id="线程池底层原理"><a href="#线程池底层原理" class="headerlink" title="线程池底层原理"></a>线程池底层原理</h2><p><strong>原理图</strong>：上面银行的例子，实际上就是线程池的工作原理。</p>
+<p><img src="https://raw.githubusercontent.com/MaJesTySA/JVM-JUC-Core/master/imgs/threadPool.png" alt=""></p>
+<p><strong>流程图</strong>：</p>
+<p><img src="https://raw.githubusercontent.com/MaJesTySA/JVM-JUC-Core/master/imgs/threadPoolProcedure.png" alt=""></p>
+<p>新任务到达→</p>
+<p>如果正在运行的线程数小于<code>corePoolSize</code>，创建核心线程；大于等于<code>corePoolSize</code>，放入等待队列。</p>
+<p>如果等待队列已满，但正在运行的线程数小于<code>maximumPoolSize</code>，创建非核心线程；大于等于<code>maximumPoolSize</code>，启动拒绝策略。</p>
+<p>当一个线程无事可做一段时间<code>keepAliveTime</code>后，如果正在运行的线程数大于<code>corePoolSize</code>，则==关闭非核心线程。==</p>
+<h2 id="线程池的拒绝策略"><a href="#线程池的拒绝策略" class="headerlink" title="线程池的拒绝策略"></a>线程池的拒绝策略</h2><p>当等待队列满时，且达到最大线程数，再有新任务到来，就需要启动拒绝策略。JDK提供了四种拒绝策略，分别是。</p>
+<ol>
+<li><strong>AbortPolicy</strong>：默认的策略，==直接抛出==<code>RejectedExecutionException</code>异常，阻止系统正常运行。</li>
+<li><strong>CallerRunsPolicy</strong>：==既不会抛出异常，也不会终止任务，而是将任务返回给调用者。==</li>
+<li><strong>DiscardOldestPolicy</strong>：==抛弃队列中等待最久的任务==，然后把当前任务加入队列中尝试再次提交任务。</li>
+<li><strong>DiscardPolicy</strong>：==直接丢弃任务==，不做任何处理。</li>
+</ol>
+<p><strong>为什么要使用线程池？</strong><br>当我们需要的并发执行的线程数量很多时，且每个线程执行很短时间就结束了，这样，我们频繁的创建、销毁线程就大大降低了工作效率（创建和销毁线程需要时间、资源）<br>而线程可以达到这样的效果：一个线程执行完任务之后，继续去执行下一个任务，不被销毁，这样线程利用率提高了。</p>
+<h2 id="实际生产使用哪一个线程池？"><a href="#实际生产使用哪一个线程池？" class="headerlink" title="实际生产使用哪一个线程池？"></a>实际生产使用哪一个线程池？</h2><p><strong>单一、可变、定长都不用</strong>！原因就是<code>FixedThreadPool</code>和<code>SingleThreadExecutor</code>底层都是用<code>LinkedBlockingQueue</code>==实现的，这个队列最大长度==为<code>Integer.MAX_VALUE</code>，显然会导致OOM。所以实际生产一般自己通过<code>ThreadPoolExecutor</code>的7个参数，自定义线程池。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">ExecutorService threadPool=<span class="keyword">new</span> ThreadPoolExecutor(<span class="number">2</span>,<span class="number">5</span>,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">                        <span class="number">1L</span>,TimeUnit.SECONDS,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">                        <span class="keyword">new</span> LinkedBlockingQueue&lt;&gt;(<span class="number">3</span>),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">                        Executors.defaultThreadFactory(),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">                        <span class="keyword">new</span> ThreadPoolExecutor.AbortPolicy());</span></pre></td></tr></table></figure>
 
-<p>于是我要做的就是：<strong>在将 SendResponse 返回之前，我生成一个唯一的 msgId，并插入到 SendResponse 对象里边就好了</strong>。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">Response.getSendResponse().setMsgid(uuid);</span></pre></td></tr></table></figure>
-
-<p><img src="https://mmbiz.qpic.cn/mmbiz_png/2BGWl1qPxib03CDpVphYxW5RooE4RdPCHYS6plBIr9hHA1UbhyoBENCV9IT8BgyeYP1tMxmyjibP45d1bZwMbaXw/640?wx_fmt=png" alt="">在返回 sendResponse 之前插入 msgId 就好了</p>
-<p>这个需求完成得非常快，简单测试了一下也没毛病，就果断上线了。小王用了一阵子也没说有什么问题，于是这个需求就交付了。</p>
-<h2 id="三、出现问题"><a href="#三、出现问题" class="headerlink" title="三、出现问题"></a>三、出现问题</h2><p>昨天，小王告诉我：“我这边邮件发送失败啦，有 msgId，看下是什么原因造成的 “</p>
-<p>于是我就去捞线上的日志，发现根据他给出的 msgId，我这边打出的日志都不是发送邮件的（而是其他 Task 的日志）。<strong>我这就慌了，难道我们这个系统出问题了？</strong></p>
-<ul>
-<li>心理活动：msgId 能够唯一标识这条 Task，而小王发给我的 msgId，却是别的 Task 的内容。是不是出大问题啦 (错乱消费？数据全乱了？)，惊慌失措</li>
-</ul>
-<p>然后，他那边继续补充：</p>
-<p><img src="https://mmbiz.qpic.cn/mmbiz_png/2BGWl1qPxib03CDpVphYxW5RooE4RdPCH3pxKicdNzp7VWuKibKSxpulI3aVuonA4s7L8cRPVpR9MeuBdbawbSS5w/640?wx_fmt=png" alt="">继续补充信息</p>
-<p>之后发现邮件是发送成功的，但是他拿到<strong>部分</strong>的 msgId 是别的 Task 的，不是邮件的。于是只能先比对剩下的邮件是否有问题，再看看 MsgId 是什么原因。</p>
-<h2 id="四、寻找问题"><a href="#四、寻找问题" class="headerlink" title="四、寻找问题"></a>四、寻找问题</h2><p>现有的条件是：</p>
-<ul>
-<li><p>那批邮箱发送是成功的</p>
-</li>
-<li><p>小王拿到了别的 Task 的 msgId</p>
-</li>
-</ul>
-<p>所以，判断系统是没问题的，只是 msgId 在并发的过程中出了问题（拿到其他 Task 的 msgId 了）</p>
-<p>于是我就去找原因啦，在查代码的时候发现前同事还在 Service 系统中的某个类留了一个注解<code>@NotThreadSafe</code>。我就觉得肯定是中途哪个地方我没注意到，导致小王拿到了其他 Task 的 msgId。</p>
-<p>人肉 Debug 了一个午休的时间还是没找出来：每个线程都独有一份的操作对象，对象的属性都没有逸出 (都在方法内部操作)，跟着整块链路一直传递，直至链路结束。看似没啥毛病啊，怀疑是不是方向错了。</p>
-<p>后来，一想，我应该关注 msgId 生成以及可能会变动的地方就好了呀。才发现，项目里边用的是<strong>枚举</strong>啊！</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 首先将sendResponse默认设置为success，也就是代码如下：</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">map.put(&quot;sendResponse&quot;,Response.SUCCESS);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 如果中途某个地方可能有问题了，那我们将Map中sendResponse进行修改</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">map.put(&quot;sendResponse&quot;,Response.ERROR);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 把response的msgId的值设置为当前Task绑定的值</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">map.get(&quot;sendResponse&quot;).setMsgid(uuid);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 等整条链路完成，从Map拿出sendResponse返回</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">return map.get(&quot;sendResponse&quot;);</span></pre></td></tr></table></figure>
-
-<p><strong>醒悟</strong>：</p>
-<ul>
-<li><p>现在我有 50 个线程，每个线程在处理数据的时候都会有一个默认的 sendResponse 对象，这个对象是用枚举来标识<code>Response.SUCCESS</code>。所以，这 50 个线程都<strong>共享</strong>着这个 sendResponse 对象</p>
-</li>
-<li><p>50 个线程共享着这个 sendResponse 对象，每个线程都可以修改 sendResponse 里边的 msgId 属性，这就自然是线程不安全的。</p>
-</li>
-<li><p>所以小王能拿到其他 Task 的 msgId（小王的线程设置完 msgId 之后，还没返回，三歪的线程又更改了一次 msgId，导致小王拿到三歪的 msgId 了）</p>
-</li>
-</ul>
-<hr>
-<p>总结：</p>
-<ul>
-<li><p>终于知道为啥当初前同事在代码上保留了 msgId 属性，但是没有使用这个属性。</p>
-</li>
-<li><p>使用枚举就不应该带<strong>有状态的属性</strong> (能修改、可变的属性)</p>
-</li>
-</ul>
+<h3 id="自定义线程池参数选择"><a href="#自定义线程池参数选择" class="headerlink" title="自定义线程池参数选择"></a>自定义线程池参数选择</h3><p>对于CPU密集型任务，最大线程数是CPU线程数+1。对于IO密集型任务，尽量多配点，可以是CPU线程数*2，或者CPU线程数/(1-阻塞系数)。</p>
 
       
 
@@ -287,7 +279,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" target="_blank" rel="noopener" class="js-tag article-tag-list-link color5">线程安全</a>
+        			<a href="javascript:void(0)" target="_blank" rel="noopener" class="js-tag article-tag-list-link color4">线程池</a>
         		</li>
       		
 		</ul>
@@ -343,7 +335,7 @@
     <a class="close js-modal-close" href="javascript:;" target="_blank" rel="noopener"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/07/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/03/26/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E7%90%86%E8%A7%A3/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -357,11 +349,11 @@
   
 <nav id="article-nav">
   
-    <a href="/2019/10/12/%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AEntp%E6%97%B6%E9%97%B4%E5%90%8C%E6%AD%A5%E6%9C%8D%E5%8A%A1/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/07/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          集群配置ntp时间同步服务
+          记一次线程安全问题
         
       </div>
     </a>
@@ -390,7 +382,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、交代背景"><span class="toc-number">1.</span> <span class="toc-text">一、交代背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、上钩"><span class="toc-number">2.</span> <span class="toc-text">二、上钩</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、出现问题"><span class="toc-number">3.</span> <span class="toc-text">三、出现问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、寻找问题"><span class="toc-number">4.</span> <span class="toc-text">四、寻找问题</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#线程池三种常用创建方式"><span class="toc-number">1.</span> <span class="toc-text">线程池三种常用创建方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#线程池创建的七个参数"><span class="toc-number">2.</span> <span class="toc-text">线程池创建的七个参数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#线程池底层原理"><span class="toc-number">3.</span> <span class="toc-text">线程池底层原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#线程池的拒绝策略"><span class="toc-number">4.</span> <span class="toc-text">线程池的拒绝策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实际生产使用哪一个线程池？"><span class="toc-number">5.</span> <span class="toc-text">实际生产使用哪一个线程池？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#自定义线程池参数选择"><span class="toc-number">5.1.</span> <span class="toc-text">自定义线程池参数选择</span></a></li></ol></li></ol>
                     </div>
                 </span>
             </div>
