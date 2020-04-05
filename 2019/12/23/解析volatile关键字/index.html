@@ -6,14 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Jayus的个人博客</title>
+  <title>解析volatile关键字 | Jayus的个人博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Jayus的个人博客">
-<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;index.html">
+  <meta name="description" content="对于volatile关键字是Java提供的一种轻量级同步机制。它能够保证可见性和有序性，但是不能保证原子性。">
+<meta name="keywords" content="volatile">
+<meta property="og:type" content="article">
+<meta property="og:title" content="解析volatile关键字">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2019&#x2F;12&#x2F;23&#x2F;%E8%A7%A3%E6%9E%90volatile%E5%85%B3%E9%94%AE%E5%AD%97&#x2F;index.html">
 <meta property="og:site_name" content="Jayus的个人博客">
+<meta property="og:description" content="对于volatile关键字是Java提供的一种轻量级同步机制。它能够保证可见性和有序性，但是不能保证原子性。">
 <meta property="og:locale" content="en">
+<meta property="og:image" content="https:&#x2F;&#x2F;s1.ax1x.com&#x2F;2020&#x2F;04&#x2F;05&#x2F;GBzQXR.png">
+<meta property="og:updated_time" content="2020-04-05T06:40:11.706Z">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;s1.ax1x.com&#x2F;2020&#x2F;04&#x2F;05&#x2F;GBzQXR.png">
   
     <link rel="alternative" href="/atom.xml" title="Jayus的个人博客" type="application/atom+xml">
   
@@ -141,16 +147,14 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-解析volatile关键字" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+            <article id="post-解析volatile关键字" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/12/23/%E8%A7%A3%E6%9E%90volatile%E5%85%B3%E9%94%AE%E5%AD%97/">解析volatile关键字</a>
+    <h1 class="article-title" itemprop="name">
+      解析volatile关键字
     </h1>
   
 
@@ -164,11 +168,72 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>对于<code>volatile</code>关键字是Java提供的一种<strong>轻量级</strong>同步机制。它能够保证<strong>可见性</strong>和<strong>有序性</strong>，但是不能保证<strong>原子性</strong>。</p>
-        
-          <a class="article-more-a" href="/2019/12/23/%E8%A7%A3%E6%9E%90volatile%E5%85%B3%E9%94%AE%E5%AD%97/#more">more >></a>
-        
+<a id="more"></a>
+
+<h2 id="JMM"><a href="#JMM" class="headerlink" title="JMM"></a>JMM</h2><p>了解volatile之前需要明白Java<strong>内存模型</strong>（即：JMM模型），不是Java<strong>内存布局</strong>，不是所谓的栈、堆、方法区。</p>
+<p>每个Java线程都有自己的<strong>工作内存</strong>。操作数据，首先从主内存中读，得到一份拷贝，操作完毕后再写回到主内存。</p>
+<p><img src="https://s1.ax1x.com/2020/04/05/GBzQXR.png" alt=""></p>
+<p>JMM可能带来<strong>可见性</strong>、<strong>原子性</strong>和<strong>有序性</strong>问题。所谓可见性，就是某个线程对主内存内容的更改，应该立刻通知到其它线程。原子性是指一个操作是不可分割的，不能执行到一半，就不执行了。所谓有序性，就是指令是有序的，不会被重排。</p>
+<h2 id="可见性"><a href="#可见性" class="headerlink" title="可见性"></a>可见性</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">可见性测试：</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyData</span></span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">int</span> number=<span class="number">0</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//volatile int number=0;</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">    AtomicInteger atomicInteger=<span class="keyword">new</span> AtomicInteger();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setTo60</span><span class="params">()</span></span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">this</span>.number=<span class="number">60</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//此时number前面已经加了volatile，但是不保证原子性</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addPlusPlus</span><span class="params">()</span></span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">        number++;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addAtomic</span><span class="params">()</span></span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">        atomicInteger.getAndIncrement();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line"><span class="comment">//volatile可以保证可见性，及时通知其它线程主物理内存的值已被修改</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">volatileVisibilityDemo</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line">    System.out.println(<span class="string">"可见性测试"</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line">    MyData myData=<span class="keyword">new</span> MyData();<span class="comment">//资源类</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">26</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//启动一个线程操作共享数据</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">27</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">new</span> Thread(()-&gt;&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">28</span></pre></td><td class="code"><pre><span class="line">        System.out.println(Thread.currentThread().getName()+<span class="string">"\t come in"</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">29</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">try</span> &#123;TimeUnit.SECONDS.sleep(<span class="number">3</span>);myData.setTo60();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">30</span></pre></td><td class="code"><pre><span class="line">        System.out.println(Thread.currentThread().getName()+<span class="string">"\t update number value: "</span>+myData.number);&#125;<span class="keyword">catch</span> (InterruptedException e)&#123;e.printStackTrace();&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">31</span></pre></td><td class="code"><pre><span class="line">    &#125;,<span class="string">"AAA"</span>).start();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">32</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">while</span> (myData.number==<span class="number">0</span>)&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">33</span></pre></td><td class="code"><pre><span class="line">     <span class="comment">//main线程持有共享数据的拷贝，一直为0</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">34</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">35</span></pre></td><td class="code"><pre><span class="line">    System.out.println(Thread.currentThread().getName()+<span class="string">"\t mission is over. main get number value: "</span>+myData.number);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">36</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+<p><code>MyData</code>类是资源类，一开始number变量没有用volatile修饰，所以程序运行的结果是：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">可见性测试</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">AAA	 come in</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">AAA	 update number value: <span class="number">60</span></span></pre></td></tr></table></figure>
+
+<p>虽然一个线程把number修改成了60，但是main线程持有的仍然是最开始的0，所以一直循环，程序不会结束。</p>
+<p>如果对number添加了volatile修饰，运行结果是：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">AAA	 come in</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">AAA	 update number value: <span class="number">60</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">main	 mission is over. main get number value: <span class="number">60</span></span></pre></td></tr></table></figure>
+
+<p>可见某个线程对number的修改，会立刻反映到主内存上。</p>
+<h2 id="原子性"><a href="#原子性" class="headerlink" title="原子性"></a>原子性</h2><p>volatile并<strong>不能保证操作的原子性</strong>。这是因为，比如一条number++的操作，会形成3条指令。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">getfield        &#x2F;&#x2F;读</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">iconst_1	&#x2F;&#x2F;++常量1</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">iadd		&#x2F;&#x2F;加操作</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">putfield	&#x2F;&#x2F;写操作</span></pre></td></tr></table></figure>
+
+<p>假设有3个线程，分别执行number++，都先从主内存中拿到最开始的值，number=0，然后三个线程分别进行操作。假设线程0执行完毕，number=1，也立刻通知到了其它线程，但是此时线程1、2已经拿到了number=0，所以结果就是写覆盖，线程1、2将number变成1。</p>
+<p>解决的方式就是：</p>
+<ol>
+<li>对<code>addPlusPlus()</code>方法加锁。<br>==2. 使用==<code>java.util.concurrent.AtomicInteger</code>类。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">atomicDemo</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    System.out.println(<span class="string">"原子性测试"</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">    MyData myData=<span class="keyword">new</span> MyData();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= <span class="number">20</span>; i++) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">new</span> Thread(()-&gt;&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt;<span class="number">1000</span> ; j++) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">                myData.addPlusPlus();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">                myData.addAtomic();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">            &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">        &#125;,String.valueOf(i)).start();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">while</span> (Thread.activeCount()&gt;<span class="number">2</span>)&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">        Thread.yield();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">    System.out.println(Thread.currentThread().getName()+<span class="string">"\t int type finally number value: "</span>+myData.number);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">    System.out.println(Thread.currentThread().getName()+<span class="string">"\t AtomicInteger type finally number value: "</span>+myData.atomicInteger);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+<p>结果：可见，由于<code>volatile</code>不能保证原子性，出现了线程重复写的问题，最终结果比20000小。而<code>AtomicInteger</code>可以保证原子性。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">原子性测试</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">main	 <span class="keyword">int</span> type <span class="keyword">finally</span> number value: <span class="number">17542</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">main	 AtomicInteger type <span class="keyword">finally</span> number value: <span class="number">20000</span></span></pre></td></tr></table></figure>
+
+<h2 id="有序性"><a href="#有序性" class="headerlink" title="有序性"></a>有序性</h2><p>volatile可以保证<strong>有序性</strong>，也就是防止<strong>指令重排序</strong>。所谓指令重排序，就是出于优化考虑，CPU执行指令的顺序跟程序员自己编写的顺序不一致。就好比一份试卷，题号是老师规定的，是程序员规定的，但是考生（CPU）可以先做选择，也可以先做填空。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> x = <span class="number">11</span>; <span class="comment">//语句1</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> y = <span class="number">12</span>; <span class="comment">//语句2</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">x = x + <span class="number">5</span>;  <span class="comment">//语句3</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">y = x * x;  <span class="comment">//语句4</span></span></pre></td></tr></table></figure>
+
+<p>以上例子，可能出现的执行顺序有1234、2134、1342，这三个都没有问题，最终结果都是x = 16，y=256。但是如果是4开头，就有问题了，y=0。这个时候就<strong>不需要</strong>指令重排序。</p>
+<p>==volatile底层是用CPU的<strong>内存屏障</strong>（Memory Barrier）指令来实现的==，有两个作用，一个是保证特定操作的顺序性，二是保证变量的可见性。在指令之间插入一条Memory Barrier指令，告诉编译器和CPU，在Memory Barrier指令之间的指令不能被重排序。</p>
+<h2 id="哪些地方用到过volatile？"><a href="#哪些地方用到过volatile？" class="headerlink" title="哪些地方用到过volatile？"></a>哪些地方用到过volatile？</h2><h3 id="单例模式的安全问题"><a href="#单例模式的安全问题" class="headerlink" title="单例模式的安全问题"></a>单例模式的安全问题</h3><p>常见的DCL（Double Check Lock）模式虽然加了同步，但是在多线程下依然会有线程安全问题。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SingletonDemo</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> SingletonDemo singletonDemo=<span class="keyword">null</span>;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">SingletonDemo</span><span class="params">()</span></span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">        System.out.println(Thread.currentThread().getName()+<span class="string">"\t 我是构造方法"</span>);</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">    <span class="comment">//DCL模式 Double Check Lock 双端检索机制：在加锁前后都进行判断</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> SingletonDemo <span class="title">getInstance</span><span class="params">()</span></span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">if</span> (singletonDemo==<span class="keyword">null</span>)&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">            <span class="keyword">synchronized</span> (SingletonDemo<span class="class">.<span class="keyword">class</span>)</span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">                 <span class="keyword">if</span> (singletonDemo==<span class="keyword">null</span>)&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">                     singletonDemo=<span class="keyword">new</span> SingletonDemo();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">                 &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">            &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">15</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">return</span> singletonDemo;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">16</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">17</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">18</span></pre></td><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">19</span></pre></td><td class="code"><pre><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">20</span></pre></td><td class="code"><pre><span class="line">            <span class="keyword">new</span> Thread(()-&gt;&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">21</span></pre></td><td class="code"><pre><span class="line">                SingletonDemo.getInstance();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">22</span></pre></td><td class="code"><pre><span class="line">            &#125;,String.valueOf(i+<span class="number">1</span>)).start();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">23</span></pre></td><td class="code"><pre><span class="line">        &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">24</span></pre></td><td class="code"><pre><span class="line">    &#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">25</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+<p>这个漏洞比较tricky，很难捕捉，但是是存在的。<code>instance=new SingletonDemo();</code>可以大致分为三步</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">memory = allocate();     <span class="comment">//1.分配内存</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">instance(memory);	 <span class="comment">//2.初始化对象</span></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">instance = memory;	 <span class="comment">//3.设置引用地址</span></span></pre></td></tr></table></figure>
+
+<p>其中2、3没有数据依赖关系，<strong>可能发生重排</strong>。如果发生，此时内存已经分配，那么<code>instance=memory</code>不为null。如果此时线程挂起，<code>instance(memory)</code>还未执行，对象还未初始化。由于<code>instance!=null</code>，所以两次判断都跳过，最后返回的<code>instance</code>==没有任何内容，还没初始化==。</p>
+<p>解决的方法就是对<code>singletondemo</code>对象添加上<code>volatile</code>关键字，禁止指令重排。</p>
+
       
 
+      
+        <div class="page-reward">
+          <a href="javascript:;" target="_blank" rel="noopener" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
       
     </div>
     <div class="article-info article-info-index">
@@ -188,16 +253,75 @@
       
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/12/23/%E8%A7%A3%E6%9E%90volatile%E5%85%B3%E9%94%AE%E5%AD%97/">展开全文 >></a>
-        </p>
-      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" target="_blank" rel="noopener" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" target="_blank" rel="noopener" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;" target="_blank" rel="noopener"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/12/23/%E8%A7%A3%E6%9E%90volatile%E5%85%B3%E9%94%AE%E5%AD%97/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+  
+    <a href="/2019/11/12/RabbitMQ%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%B6%88%E6%81%AF%E5%A4%84%E7%90%86/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">RabbitMQ的原理和消息处理</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -212,317 +336,32 @@
         </div>
         
         
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-RabbitMQ的原理和消息处理" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/11/12/RabbitMQ%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%B6%88%E6%81%AF%E5%A4%84%E7%90%86/">RabbitMQ的原理和消息处理</a>
-    </h1>
-  
-
-        
-        <a href="/2019/11/12/RabbitMQ%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%B6%88%E6%81%AF%E5%A4%84%E7%90%86/" class="archive-article-date">
-  	<time datetime="2019-11-12T13:13:45.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-11-12</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>RabbitMQ是一个开源的AMQP实现，服务器端用Erlang语言编写。用于在分布式系统中存储转发消息，在易用性、扩展性、高可用性等方面表现不俗。</p>
-        
-          <a class="article-more-a" href="/2019/11/12/RabbitMQ%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%B6%88%E6%81%AF%E5%A4%84%E7%90%86/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" target="_blank" rel="noopener" class="js-tag article-tag-list-link color4">RabbitMQ</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/11/12/RabbitMQ%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%B6%88%E6%81%AF%E5%A4%84%E7%90%86/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" target="_blank" rel="noopener" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#JMM"><span class="toc-number">1.</span> <span class="toc-text">JMM</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#可见性"><span class="toc-number">2.</span> <span class="toc-text">可见性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#原子性"><span class="toc-number">3.</span> <span class="toc-text">原子性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#有序性"><span class="toc-number">4.</span> <span class="toc-text">有序性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#哪些地方用到过volatile？"><span class="toc-number">5.</span> <span class="toc-text">哪些地方用到过volatile？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#单例模式的安全问题"><span class="toc-number">5.1.</span> <span class="toc-text">单例模式的安全问题</span></a></li></ol></li></ol>
+                    </div>
+                </span>
             </div>
         </div>
         
-        
     </div>
 </aside>
 
 
 
-
   
-    <article id="post-类的加载和反射问题" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/10/29/%E7%B1%BB%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%92%8C%E5%8F%8D%E5%B0%84%E9%97%AE%E9%A2%98/">类的加载和反射问题</a>
-    </h1>
   
 
-        
-        <a href="/2019/10/29/%E7%B1%BB%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%92%8C%E5%8F%8D%E5%B0%84%E9%97%AE%E9%A2%98/" class="archive-article-date">
-  	<time datetime="2019-10-29T12:12:14.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-29</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>类加载的基本流程：java开发工具可以将java代码编译为class字节码,类加载器加载class字节码，将字节码里面的指令放到内存执行并且将数据动态分配到jvm内存模型中</p>
-        
-          <a class="article-more-a" href="/2019/10/29/%E7%B1%BB%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%92%8C%E5%8F%8D%E5%B0%84%E9%97%AE%E9%A2%98/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" target="_blank" rel="noopener" class="js-tag article-tag-list-link color3">类的加载、反射</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/10/29/%E7%B1%BB%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%92%8C%E5%8F%8D%E5%B0%84%E9%97%AE%E9%A2%98/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" target="_blank" rel="noopener" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-集群配置ntp时间同步服务" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/10/12/%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AEntp%E6%97%B6%E9%97%B4%E5%90%8C%E6%AD%A5%E6%9C%8D%E5%8A%A1/">集群配置ntp时间同步服务</a>
-    </h1>
   
 
-        
-        <a href="/2019/10/12/%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AEntp%E6%97%B6%E9%97%B4%E5%90%8C%E6%AD%A5%E6%9C%8D%E5%8A%A1/" class="archive-article-date">
-  	<time datetime="2019-10-12T11:58:04.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-10-12</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>集群中时间不同步有可能会让大数据的应用程序运行混乱，造成不可预知的问题，比如 Hbase，当时间差别过大时就会挂掉，所以在大数据集群中，ntp 服务，应该作为一种基础的服务，以下在演示在 CentOS 7.2 集群上配置 ntp 服务的过程</p>
-        
-          <a class="article-more-a" href="/2019/10/12/%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AEntp%E6%97%B6%E9%97%B4%E5%90%8C%E6%AD%A5%E6%9C%8D%E5%8A%A1/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-	<div class="article-category tagcloud">
-		<i class="icon-book icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="/categories/环境配置//" class="article-tag-list-link color5">环境配置</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/10/12/%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AEntp%E6%97%B6%E9%97%B4%E5%90%8C%E6%AD%A5%E6%9C%8D%E5%8A%A1/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" target="_blank" rel="noopener" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-记一次线程安全问题" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/07/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/">记一次线程安全问题</a>
-    </h1>
   
 
-        
-        <a href="/2019/07/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/" class="archive-article-date">
-  	<time datetime="2019-07-21T07:28:04.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-21</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="一、交代背景"><a href="#一、交代背景" class="headerlink" title="一、交代背景"></a>一、交代背景</h2><p>记录一次线程安全问题的解决，我这边有一个系统，提供一个 RPC 接口去发送各种信息（比如短信、邮件、微信）等等渠道。</p>
-        
-          <a class="article-more-a" href="/2019/07/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" target="_blank" rel="noopener" class="js-tag article-tag-list-link color5">线程安全</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/07/21/%E8%AE%B0%E4%B8%80%E6%AC%A1%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" target="_blank" rel="noopener" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
 
 
@@ -546,8 +385,8 @@
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
