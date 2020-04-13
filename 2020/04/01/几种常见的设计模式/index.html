@@ -6,13 +6,17 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Tag: RabbitMQ | Jayus的个人博客</title>
+  <title>Java中常见的几种设计模块 | Jayus的个人博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Jayus的个人博客">
-<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;tags&#x2F;RabbitMQ&#x2F;index.html">
+  <meta name="description" content="本文介绍5中Java中常见的设计模块（单例模式、工厂模式、代理模式、原型模式、策略模式）">
+<meta name="keywords" content="设计模式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java中常见的几种设计模块">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2020&#x2F;04&#x2F;01&#x2F;%E5%87%A0%E7%A7%8D%E5%B8%B8%E8%A7%81%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F&#x2F;index.html">
 <meta property="og:site_name" content="Jayus的个人博客">
+<meta property="og:description" content="本文介绍5中Java中常见的设计模块（单例模式、工厂模式、代理模式、原型模式、策略模式）">
 <meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2020-04-13T04:14:28.913Z">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="Jayus的个人博客" type="application/atom+xml">
@@ -141,60 +145,301 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-几种常见的设计模式" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2020" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/02/26/RabbitMQ%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%B6%88%E6%81%AF%E5%A4%84%E7%90%86/" class="archive-article-date">
-  	<time datetime="2020-02-26T13:13:45.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-26</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/02/26/RabbitMQ%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%B6%88%E6%81%AF%E5%A4%84%E7%90%86/">RabbitMQ的原理和消息处理</a>
+    <h1 class="article-title" itemprop="name">
+      Java中常见的几种设计模块
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2020/04/01/%E5%87%A0%E7%A7%8D%E5%B8%B8%E8%A7%81%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" class="archive-article-date">
+  	<time datetime="2020-04-01T13:22:43.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-01</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本文介绍5中Java中常见的设计模块（单例模式、工厂模式、代理模式、原型模式、策略模式）</p>
+<a id="more"></a>
+<h4 id="单例模式："><a href="#单例模式：" class="headerlink" title="单例模式："></a>单例模式：</h4><ul>
+<li>一个类只有一个实例，该类能自行创建该类的实例</li>
+<li>特点：<ul>
+<li>单例只有一个实例对象</li>
+<li>单例对象必由本类产生</li>
+<li>单例对外提供一个统一访问的接口</li>
+</ul>
+</li>
+<li>两种模式<ul>
+<li>饿汉模式：类一旦加载就会产生一个单例，保证在调用外部接口的时候就存在此对象</li>
+<li>懒汉模式：类加载的时候没有生成单例，只有第一次调用的时候才产生，以后不会再产生</li>
+</ul>
+</li>
+<li>饿汉模式（保证线程安全）<ul>
+<li>私有的构造器</li>
+<li>提供静态的访问方法</li>
+<li>内部由本类创建单例实例（定义的时候就new）</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">public class HungrySingleton &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">	private static final HungrySingleton obj &#x3D; new HungrySingleton();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">	private HungrySingleton()&#123;&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">	</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">	public static HungrySingleton getInstnce()&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">		return obj;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">	&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">	</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li><p>懒汉模式（线程不安全，所以加锁）</p>
+<ul>
+<li>私有构造器</li>
+<li>静态访问方法</li>
+<li>判断为空，才new一个</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">public class LazySingleton &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">	private static volatile LazySingleton obj&#x3D; null;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">	private LazySingleton()&#123;&#125;;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">	</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">	public static synchronized LazySingleton getInstance()&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">		</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">		if(obj&#x3D;&#x3D;null)&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">			obj &#x3D; new LazySingleton();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">		&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">		</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">		return obj;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">		</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">	&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">14</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+
+
+<h4 id="工厂模式："><a href="#工厂模式：" class="headerlink" title="工厂模式："></a>工厂模式：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">意图：定义一个创建对象的接口，让其子类自己决定实例化哪一个工厂类，工厂模式使其创建过程延迟到子类进行。</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">主要解决：主要解决接口选择的问题。</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">何时使用：我们明确地计划不同条件下创建不同实例时。</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line"></span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">如何解决：让其子类实现工厂接口，返回的也是一个抽象的产品。</span></pre></td></tr></table></figure>
+
+<ul>
+<li><p>分类：</p>
+<ul>
+<li><p>简单工厂（静态工厂）：产品需要抽象出来，工厂需要具体的类来生产产品</p>
+<ul>
+<li>优点：简单</li>
+<li>缺点：<ul>
+<li>扩展性差、一旦要增加新的产品，必须创建建新工厂</li>
+<li>不同产品需要需要传递不同的参数控制，参数不支持工厂就失效</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>工厂方法：</p>
+<ul>
+<li>一定程度上能达到一定的解耦的目的，设计更加符合开闭原则（消费者和产品隔离）</li>
+<li>若要增加一个产品，不用修改原来的代码 </li>
+<li>缺点： 一个工厂只能生产一个产品</li>
+<li>mybatis通过sqlsessionfactory用到了工厂模式的工厂方法和建造者模式（构建不同的环境）</li>
+</ul>
+</li>
+<li><p>抽象工厂</p>
+<ul>
+<li>结构和工厂方法类似，但是是工厂方法的升级 </li>
+<li>产品细化，产品族</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="原型模式："><a href="#原型模式：" class="headerlink" title="原型模式："></a>原型模式：</h4><ul>
+<li>用一个已经创建好的实例对象作为原型，通过复制快速创建跟原型一样的对象，但是这两个对象在内存中是不同的<ul>
+<li>浅克隆:java提供的是浅克隆，可以克隆对象的模型和数据</li>
+</ul>
+</li>
+<li>区别：<ul>
+<li>浅克隆：不会克隆引用类型，只复制引用类型的指向</li>
+<li>深克隆会复制引用类型的对象</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;对象的克隆（实现CloneAble接口，重写clone（）调用super.clone()）</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">	@Override</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">	protected Object clone() &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">		PeopleBean peo &#x3D; null;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">		try &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">6</span></pre></td><td class="code"><pre><span class="line">			peo &#x3D; (PeopleBean) super.clone();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">7</span></pre></td><td class="code"><pre><span class="line">		&#125; catch (CloneNotSupportedException e) &#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">8</span></pre></td><td class="code"><pre><span class="line">			&#x2F;&#x2F; TODO Auto-generated catch block</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">9</span></pre></td><td class="code"><pre><span class="line">			e.printStackTrace();</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">10</span></pre></td><td class="code"><pre><span class="line">		&#125;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">11</span></pre></td><td class="code"><pre><span class="line">		</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">12</span></pre></td><td class="code"><pre><span class="line">		return peo;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">13</span></pre></td><td class="code"><pre><span class="line">	&#125;</span></pre></td></tr></table></figure>
+
+<h4 id="代理模式"><a href="#代理模式" class="headerlink" title="代理模式"></a>代理模式</h4><ul>
+<li>概念：代理模式是一种设计模式，提供对目标对象的另外一种访问方式。</li>
+<li>好处：代理对象可以在目标对象的基础上继续增强功能。      </li>
+<li>代理模式：<ul>
+<li>静态代理：你在使用代理模式的时候，代理类是存在的。</li>
+<li>动态代理：使用代理模式，代理类不存在，动态产生的。<ul>
+<li>1.JDK动态代理实现</li>
+<li>2.Cglib动态实现。 </li>
+<li>jdk代理目标对象必要要有接口，cglib不需要要求目标对象必须有接口</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="策略模式"><a href="#策略模式" class="headerlink" title="策略模式"></a>策略模式</h4><ul>
+<li>概念：当前模式定义了一系列的算法，并且封装了这些算法。eg：如果业务中需要排序可以选择不同的排序方案。</li>
+<li>算法的变化不会影响调用算法的客户。</li>
+<li>优点：<ul>
+<li>多条件分支语句不好维护，策略模式避免了使用多条件语句</li>
+<li>提供很多重用的算法，避免代码重复</li>
+<li>满足开闭原则，是对开闭原则很好的体现，可以在不修改源码的情况下，增加很多新的算法</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>建造者模式：sqlsessionfactorybuilder.build()</li>
+<li>生产者和消费者：先生产再消费</li>
+<li>适配器模式:springmvc的适配器</li>
+</ul>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" target="_blank" rel="noopener" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" target="_blank" rel="noopener" class="js-tag article-tag-list-link color4">RabbitMQ</a>
+        			<a href="javascript:void(0)" target="_blank" rel="noopener" class="js-tag article-tag-list-link color5">设计模式</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" target="_blank" rel="noopener" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" target="_blank" rel="noopener" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;" target="_blank" rel="noopener"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2020/04/01/%E5%87%A0%E7%A7%8D%E5%B8%B8%E8%A7%81%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+    <a href="/2020/04/05/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E7%90%86%E8%A7%A3/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          线程池的理解
+        
+      </div>
+    </a>
   
   
-    </div></section>
+    <a href="/2020/02/29/%E7%B1%BB%E7%9A%84%E5%8A%A0%E8%BD%BD%E5%92%8C%E5%8F%8D%E5%B0%84%E9%97%AE%E9%A2%98/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">类的加载和反射问题</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" target="_blank" rel="noopener" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#单例模式："><span class="toc-number">1.</span> <span class="toc-text">单例模式：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#工厂模式："><span class="toc-number">2.</span> <span class="toc-text">工厂模式：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#原型模式："><span class="toc-number">3.</span> <span class="toc-text">原型模式：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#代理模式"><span class="toc-number">4.</span> <span class="toc-text">代理模式</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#策略模式"><span class="toc-number">5.</span> <span class="toc-text">策略模式</span></a></li></ol>
+                    </div>
+                </span>
+            </div>
+        </div>
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -217,9 +462,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,

@@ -6,14 +6,21 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Tag: RabbitMQ | Jayus的个人博客</title>
+  <title>线程池的理解 | Jayus的个人博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Jayus的个人博客">
-<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;tags&#x2F;RabbitMQ&#x2F;index.html">
+  <meta name="description" content="线程池主要是控制运行线程的数量，将待处理任务放到等待队列，然后创建线程执行这些任务。如果超过了最大线程数，则等待。">
+<meta name="keywords" content="线程池">
+<meta property="og:type" content="article">
+<meta property="og:title" content="线程池的理解">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2020&#x2F;04&#x2F;05&#x2F;%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E7%90%86%E8%A7%A3&#x2F;index.html">
 <meta property="og:site_name" content="Jayus的个人博客">
+<meta property="og:description" content="线程池主要是控制运行线程的数量，将待处理任务放到等待队列，然后创建线程执行这些任务。如果超过了最大线程数，则等待。">
 <meta property="og:locale" content="en">
+<meta property="og:image" content="https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;MaJesTySA&#x2F;JVM-JUC-Core&#x2F;master&#x2F;imgs&#x2F;threadPool.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;MaJesTySA&#x2F;JVM-JUC-Core&#x2F;master&#x2F;imgs&#x2F;threadPoolProcedure.png">
+<meta property="og:updated_time" content="2020-04-13T04:11:45.232Z">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;MaJesTySA&#x2F;JVM-JUC-Core&#x2F;master&#x2F;imgs&#x2F;threadPool.png">
   
     <link rel="alternative" href="/atom.xml" title="Jayus的个人博客" type="application/atom+xml">
   
@@ -141,60 +148,265 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-线程池的理解" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2020" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/02/26/RabbitMQ%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%B6%88%E6%81%AF%E5%A4%84%E7%90%86/" class="archive-article-date">
-  	<time datetime="2020-02-26T13:13:45.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-26</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/02/26/RabbitMQ%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%B6%88%E6%81%AF%E5%A4%84%E7%90%86/">RabbitMQ的原理和消息处理</a>
+    <h1 class="article-title" itemprop="name">
+      线程池的理解
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2020/04/05/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E7%90%86%E8%A7%A3/" class="archive-article-date">
+  	<time datetime="2020-04-05T11:54:43.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-05</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>线程池主要是控制运行线程的数量，将待处理任务放到等待队列，然后创建线程执行这些任务。如果超过了最大线程数，则等待。</p>
+<a id="more"></a>
+
+<p><strong>优点</strong>：</p>
+<ol>
+<li>线程复用：不用一直new新线程，重复利用已经创建的线程来降低线程的创建和销毁开销，节省系统资源。</li>
+<li>提高响应速度：当任务达到时，不用创建新的线程，直接利用线程池的线程。</li>
+<li>管理线程：可以控制最大并发数，控制线程的创建等。</li>
+</ol>
+<p><strong>体系</strong>：<code>Executor</code>→<code>ExecutorService</code>→<code>AbstractExecutorService</code>→<code>ThreadPoolExecutor</code>。<code>ThreadPoolExecutor</code>是线程池创建的核心类。类似<code>Arrays</code>、<code>Collections</code>工具类，<code>Executor</code>也有自己的工具类<code>Executors</code>。</p>
+<h2 id="线程池三种常用创建方式"><a href="#线程池三种常用创建方式" class="headerlink" title="线程池三种常用创建方式"></a>线程池三种常用创建方式</h2><p><strong>newFixedThreadPool</strong>：使用<code>LinkedBlockingQueue</code>实现，==定长线程池==。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ExecutorService <span class="title">newFixedThreadPool</span><span class="params">(<span class="keyword">int</span> nThreads)</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> ThreadPoolExecutor(nThreads, nThreads,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">                                  <span class="number">0L</span>, TimeUnit.MILLISECONDS,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">                                  <span class="keyword">new</span> LinkedBlockingQueue&lt;Runnable&gt;());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+<p><strong>newSingleThreadExecutor</strong>：使用<code>LinkedBlockingQueue</code>实现，==一池只有一个线程。==</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ExecutorService <span class="title">newSingleThreadExecutor</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> FinalizableDelegatedExecutorService(<span class="keyword">new</span> ThreadPoolExecutor(<span class="number">1</span>, <span class="number">1</span>,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">                                    <span class="number">0L</span>, TimeUnit.MILLISECONDS,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">                                    <span class="keyword">new</span> LinkedBlockingQueue&lt;Runnable&gt;()));</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+<p><strong>newCachedThreadPool</strong>：使用<code>SynchronousQueue</code>实现，==变长线程池。==</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ExecutorService <span class="title">newCachedThreadPool</span><span class="params">()</span> </span>&#123;</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> ThreadPoolExecutor(<span class="number">0</span>, Integer.MAX_VALUE,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">                                 <span class="number">60L</span>, TimeUnit.SECONDS,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">                                 <span class="keyword">new</span> SynchronousQueue&lt;Runnable&gt;());</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">&#125;</span></pre></td></tr></table></figure>
+
+<h2 id="线程池创建的七个参数"><a href="#线程池创建的七个参数" class="headerlink" title="线程池创建的七个参数"></a>线程池创建的七个参数</h2><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>意义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>corePoolSize</td>
+<td>线程池常驻核心线程数</td>
+</tr>
+<tr>
+<td>maximumPoolSize</td>
+<td>能够容纳的最大线程数</td>
+</tr>
+<tr>
+<td>keepAliveTime</td>
+<td>空闲线程存活时间</td>
+</tr>
+<tr>
+<td>unit</td>
+<td>存活时间单位</td>
+</tr>
+<tr>
+<td>workQueue</td>
+<td>存放提交但未执行任务的队列</td>
+</tr>
+<tr>
+<td>threadFactory</td>
+<td>创建线程的工厂类</td>
+</tr>
+<tr>
+<td>handler</td>
+<td>等待队列满后的拒绝策略</td>
+</tr>
+</tbody></table>
+<p><strong>理解</strong>：线程池的创建参数，就像一个<strong>银行</strong>。</p>
+<p><code>corePoolSize</code>就像银行的“<strong>当值窗口</strong>“，比如今天有<strong>2位柜员</strong>在受理<strong>客户请求</strong>（任务）。如果超过2个客户，那么新的客户就会在<strong>等候区</strong>（等待队列<code>workQueue</code>）等待。当<strong>等候区</strong>也满了，这个时候就要开启“<strong>加班窗口</strong>”，让其它3位柜员来加班，此时达到<strong>最大窗口</strong><code>maximumPoolSize</code>，为5个。如果开启了所有窗口，等候区依然满员，此时就应该启动”<strong>拒绝策略</strong>“<code>handler</code>，告诉不断涌入的客户，叫他们不要进入，已经爆满了。由于不再涌入新客户，办完事的客户增多，窗口开始空闲，这个时候就通过<code>keepAlivetTime</code>将多余的3个”加班窗口“取消，恢复到2个”当值窗口“。</p>
+<h2 id="线程池底层原理"><a href="#线程池底层原理" class="headerlink" title="线程池底层原理"></a>线程池底层原理</h2><p><strong>原理图</strong>：上面银行的例子，实际上就是线程池的工作原理。</p>
+<p><img src="https://raw.githubusercontent.com/MaJesTySA/JVM-JUC-Core/master/imgs/threadPool.png" alt=""></p>
+<p><strong>流程图</strong>：</p>
+<p><img src="https://raw.githubusercontent.com/MaJesTySA/JVM-JUC-Core/master/imgs/threadPoolProcedure.png" alt=""></p>
+<p>新任务到达→</p>
+<p>如果正在运行的线程数小于<code>corePoolSize</code>，创建核心线程；大于等于<code>corePoolSize</code>，放入等待队列。</p>
+<p>如果等待队列已满，但正在运行的线程数小于<code>maximumPoolSize</code>，创建非核心线程；大于等于<code>maximumPoolSize</code>，启动拒绝策略。</p>
+<p>当一个线程无事可做一段时间<code>keepAliveTime</code>后，如果正在运行的线程数大于<code>corePoolSize</code>，则==关闭非核心线程。==</p>
+<h2 id="线程池的拒绝策略"><a href="#线程池的拒绝策略" class="headerlink" title="线程池的拒绝策略"></a>线程池的拒绝策略</h2><p>当等待队列满时，且达到最大线程数，再有新任务到来，就需要启动拒绝策略。JDK提供了四种拒绝策略，分别是。</p>
+<ol>
+<li><strong>AbortPolicy</strong>：默认的策略，==直接抛出==<code>RejectedExecutionException</code>异常，阻止系统正常运行。</li>
+<li><strong>CallerRunsPolicy</strong>：==既不会抛出异常，也不会终止任务，而是将任务返回给调用者。==</li>
+<li><strong>DiscardOldestPolicy</strong>：==抛弃队列中等待最久的任务==，然后把当前任务加入队列中尝试再次提交任务。</li>
+<li><strong>DiscardPolicy</strong>：==直接丢弃任务==，不做任何处理。</li>
+</ol>
+<p><strong>为什么要使用线程池？</strong><br>当我们需要的并发执行的线程数量很多时，且每个线程执行很短时间就结束了，这样，我们频繁的创建、销毁线程就大大降低了工作效率（创建和销毁线程需要时间、资源）<br>而线程可以达到这样的效果：一个线程执行完任务之后，继续去执行下一个任务，不被销毁，这样线程利用率提高了。</p>
+<h2 id="实际生产使用哪一个线程池？"><a href="#实际生产使用哪一个线程池？" class="headerlink" title="实际生产使用哪一个线程池？"></a>实际生产使用哪一个线程池？</h2><p><strong>单一、可变、定长都不用</strong>！原因就是<code>FixedThreadPool</code>和<code>SingleThreadExecutor</code>底层都是用<code>LinkedBlockingQueue</code>==实现的，这个队列最大长度==为<code>Integer.MAX_VALUE</code>，显然会导致OOM。所以实际生产一般自己通过<code>ThreadPoolExecutor</code>的7个参数，自定义线程池。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">ExecutorService threadPool=<span class="keyword">new</span> ThreadPoolExecutor(<span class="number">2</span>,<span class="number">5</span>,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">                        <span class="number">1L</span>,TimeUnit.SECONDS,</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">                        <span class="keyword">new</span> LinkedBlockingQueue&lt;&gt;(<span class="number">3</span>),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">4</span></pre></td><td class="code"><pre><span class="line">                        Executors.defaultThreadFactory(),</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">5</span></pre></td><td class="code"><pre><span class="line">                        <span class="keyword">new</span> ThreadPoolExecutor.AbortPolicy());</span></pre></td></tr></table></figure>
+
+<h3 id="自定义线程池参数选择"><a href="#自定义线程池参数选择" class="headerlink" title="自定义线程池参数选择"></a>自定义线程池参数选择</h3><p>对于CPU密集型任务，最大线程数是CPU线程数+1。对于IO密集型任务，尽量多配点，可以是CPU线程数*2，或者CPU线程数/(1-阻塞系数)。</p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" target="_blank" rel="noopener" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" target="_blank" rel="noopener" class="js-tag article-tag-list-link color4">RabbitMQ</a>
+        			<a href="javascript:void(0)" target="_blank" rel="noopener" class="js-tag article-tag-list-link color4">线程池</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" target="_blank" rel="noopener" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" target="_blank" rel="noopener" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;" target="_blank" rel="noopener"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2020/04/05/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E7%90%86%E8%A7%A3/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+    <a href="/2020/04/10/%E8%A7%A3%E6%9E%90volatile%E5%85%B3%E9%94%AE%E5%AD%97/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          解析volatile关键字
+        
+      </div>
+    </a>
   
   
-    </div></section>
+    <a href="/2020/04/01/%E5%87%A0%E7%A7%8D%E5%B8%B8%E8%A7%81%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Java中常见的几种设计模块</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" target="_blank" rel="noopener" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#线程池三种常用创建方式"><span class="toc-number">1.</span> <span class="toc-text">线程池三种常用创建方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#线程池创建的七个参数"><span class="toc-number">2.</span> <span class="toc-text">线程池创建的七个参数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#线程池底层原理"><span class="toc-number">3.</span> <span class="toc-text">线程池底层原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#线程池的拒绝策略"><span class="toc-number">4.</span> <span class="toc-text">线程池的拒绝策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实际生产使用哪一个线程池？"><span class="toc-number">5.</span> <span class="toc-text">实际生产使用哪一个线程池？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#自定义线程池参数选择"><span class="toc-number">5.1.</span> <span class="toc-text">自定义线程池参数选择</span></a></li></ol></li></ol>
+                    </div>
+                </span>
+            </div>
+        </div>
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -217,9 +429,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,

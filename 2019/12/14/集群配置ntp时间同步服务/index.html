@@ -6,14 +6,27 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Tag: RabbitMQ | Jayus的个人博客</title>
+  <title>集群配置ntp时间同步服务 | Jayus的个人博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Jayus的个人博客">
-<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;tags&#x2F;RabbitMQ&#x2F;index.html">
+  <meta name="description" content="集群中时间不同步有可能会让大数据的应用程序运行混乱，造成不可预知的问题，比如 Hbase，当时间差别过大时就会挂掉，所以在大数据集群中，ntp 服务，应该作为一种基础的服务，以下在演示在 CentOS 7.2 集群上配置 ntp 服务的过程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="集群配置ntp时间同步服务">
+<meta property="og:url" content="http:&#x2F;&#x2F;yoursite.com&#x2F;2019&#x2F;12&#x2F;14&#x2F;%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AEntp%E6%97%B6%E9%97%B4%E5%90%8C%E6%AD%A5%E6%9C%8D%E5%8A%A1&#x2F;index.html">
 <meta property="og:site_name" content="Jayus的个人博客">
+<meta property="og:description" content="集群中时间不同步有可能会让大数据的应用程序运行混乱，造成不可预知的问题，比如 Hbase，当时间差别过大时就会挂掉，所以在大数据集群中，ntp 服务，应该作为一种基础的服务，以下在演示在 CentOS 7.2 集群上配置 ntp 服务的过程">
 <meta property="og:locale" content="en">
+<meta property="og:image" content="https:&#x2F;&#x2F;images2015.cnblogs.com&#x2F;blog&#x2F;734555&#x2F;201604&#x2F;734555-20160414113234738-150315846.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;images2015.cnblogs.com&#x2F;blog&#x2F;734555&#x2F;201604&#x2F;734555-20160414113440582-177539555.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;images2015.cnblogs.com&#x2F;blog&#x2F;734555&#x2F;201604&#x2F;734555-20160414113909113-672156086.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;images2015.cnblogs.com&#x2F;blog&#x2F;734555&#x2F;201604&#x2F;734555-20160414114306566-1164020787.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;images2015.cnblogs.com&#x2F;blog&#x2F;734555&#x2F;201604&#x2F;734555-20160414114409738-1950449952.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;images2015.cnblogs.com&#x2F;blog&#x2F;734555&#x2F;201604&#x2F;734555-20160414114918207-502770758.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;images2015.cnblogs.com&#x2F;blog&#x2F;734555&#x2F;201604&#x2F;734555-20160414115035613-369897346.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;images2015.cnblogs.com&#x2F;blog&#x2F;734555&#x2F;201604&#x2F;734555-20160414115851988-990024679.png">
+<meta property="og:image" content="https:&#x2F;&#x2F;images2015.cnblogs.com&#x2F;blog&#x2F;734555&#x2F;201604&#x2F;734555-20160414120553082-27045262.png">
+<meta property="og:updated_time" content="2020-04-13T04:12:13.532Z">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;images2015.cnblogs.com&#x2F;blog&#x2F;734555&#x2F;201604&#x2F;734555-20160414113234738-150315846.png">
   
     <link rel="alternative" href="/atom.xml" title="Jayus的个人博客" type="application/atom+xml">
   
@@ -141,60 +154,217 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-集群配置ntp时间同步服务" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2020" class="archive-year">2020</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2020/02/26/RabbitMQ%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%B6%88%E6%81%AF%E5%A4%84%E7%90%86/" class="archive-article-date">
-  	<time datetime="2020-02-26T13:13:45.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-26</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2020/02/26/RabbitMQ%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%B6%88%E6%81%AF%E5%A4%84%E7%90%86/">RabbitMQ的原理和消息处理</a>
+    <h1 class="article-title" itemprop="name">
+      集群配置ntp时间同步服务
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
+        
+        <a href="/2019/12/14/%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AEntp%E6%97%B6%E9%97%B4%E5%90%8C%E6%AD%A5%E6%9C%8D%E5%8A%A1/" class="archive-article-date">
+  	<time datetime="2019-12-14T11:58:04.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-12-14</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>集群中时间不同步有可能会让大数据的应用程序运行混乱，造成不可预知的问题，比如 Hbase，当时间差别过大时就会挂掉，所以在大数据集群中，ntp 服务，应该作为一种基础的服务，以下在演示在 CentOS 7.2 集群上配置 ntp 服务的过程</p>
+<a id="more"></a>
+
+<p>　　首先检查系统中是否安装 ntp 包： rpm -q ntp 我这里是只是基础服务器操作系统，所以没有安装 ntp 服务<br>　　<img src="https://images2015.cnblogs.com/blog/734555/201604/734555-20160414113234738-150315846.png" alt=""><br>　　然后，执行命令在线安装 ntp： yum -y install ntp<br>　　安装成功之后，再次执行 rpm -q ntp 可以看到对应的包：<br>　　<img src="https://images2015.cnblogs.com/blog/734555/201604/734555-20160414113440582-177539555.png" alt=""></p>
+<p>　　这个时候可以使用命令查看 ntp 是否设置为开启启动状态：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">systemctl is-enabled ntpd</span></pre></td></tr></table></figure>
+<p>　　可以看到默认是 disable 禁用开机启动的<br>　　<img src="https://images2015.cnblogs.com/blog/734555/201604/734555-20160414113909113-672156086.png" alt=""></p>
+<p>　　现在执行： chkconfig ntpd on 或者 systemctl enable ntpd 设置为开机自启动</p>
+<p>　　设置成功后，ntp 服务并不能立即启动，而是在下次重启之后启动，所以现在手动启动 ntp：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">systemctl start ntpd.service</span></pre></td></tr></table></figure>
+<p>　　启动之后，执行： netstat -an | grep 123 可以看到 ntp 服务的 123 端口已经使用：<br>　　<img src="https://images2015.cnblogs.com/blog/734555/201604/734555-20160414114306566-1164020787.png" alt=""><br>　　执行： ps -ef | grep ntpd 可以看到 ntp 进程也已经启动<br>　　<img src="https://images2015.cnblogs.com/blog/734555/201604/734555-20160414114409738-1950449952.png" alt=""></p>
+<p>　　默认情况下 ntp 是从外网时间服务器来更新时间的，在集群中使用只要保证集群中所有的服务器时间一致即可，所以先配置其中一台服务器为时间服务器，其他服务器相对来说为这台时间服务器的客户端，从时间服务器上获取时间数据，从而避免联网，可用性更高</p>
+<p>　　1、首先是时间服务器配置：</p>
+<p>　　时间服务器的 IP：192.168.0.157</p>
+<p>　　执行 vim /etc/ntp.conf 打开 ntp 配置文件，找到 server 指定时间服务器的位置，这些条都注释掉；然后添加下面 2 行固定配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">server 127.127.1.0</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">fudge 127.127.1.0 stratum 10</span></pre></td></tr></table></figure>
+
+<p>　　<img src="https://images2015.cnblogs.com/blog/734555/201604/734555-20160414114918207-502770758.png" alt=""></p>
+<p>　　然后在 restrict 指定的两行下面追加一行： restrict 192.168.1.1 mask 255.255.252.0 nomodify notrap </p>
+<p>　　<img src="https://images2015.cnblogs.com/blog/734555/201604/734555-20160414115035613-369897346.png" alt=""></p>
+<p>　　这个配置根据自己的网关和网段配置，只要能保证局域网主机通信就可以，比如这里子网掩码为 255.255.252.0 那么网段配置 192.168.0.0 也可以，只是通信的范围不太一样，总之这个配置就是授权局域网内能从本地同步时间的主机范围</p>
+<p>　　配置好之后，保存并退出，执行 systemctl restart ntpd.service  重启 ntp 服务即可</p>
+<p>　   2、然后是其他服务器的配置，这里相当于客户端的配置：</p>
+<p>　　同样执行上面的一些命令对 ntp 进行安装、启动、自启配置、状态查看等操作，配置文件依然是：/etc/ntp.conf，打开进行如下配置：</p>
+<p>　　同样注释默认的 server 服务器，添加一行指定时间服务器位置： server 192.168.0.157 因为上面时间服务器地址是 192.168.0.157</p>
+<p>　　<img src="https://images2015.cnblogs.com/blog/734555/201604/734555-20160414115851988-990024679.png" alt=""></p>
+<p>　　配置好之后，保存，重启 ntp 服务即可</p>
+<p>　　所有客户端都进行以上配置，都启动之后，集群会自动定期进行服务的同步，这样集群的时间就保持一致了</p>
+<p>　　另外如果想要手动同步某一台机器的时间，那么可以依次执行下面命令实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span></pre></td><td class="code"><pre><span class="line">systemctl stop ntpd  # 先停止服务，否则ntp socket会被占用</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">2</span></pre></td><td class="code"><pre><span class="line">ntpdate 192.168.0.157  # 手动执行同步</span></pre></td></tr><tr><td class="gutter"><pre><span class="line">3</span></pre></td><td class="code"><pre><span class="line">systemctl start ntpd  # 继续启动服务</span></pre></td></tr></table></figure>
+
+<p>　　同步时，会看到如下结果表示同步成功：</p>
+<p>　　<img src="https://images2015.cnblogs.com/blog/734555/201604/734555-20160414120553082-27045262.png" alt=""></p>
+<p>　　如果没有网络时，可以<a href="http://pan.baidu.com/s/1bpt3mH5" target="_blank" rel="noopener">点击这里下载</a> ntp 离线安装包，执行其中的 install.sh 脚本即可安装，配置过程和前面完全一样</p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" target="_blank" rel="noopener" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" target="_blank" rel="noopener" class="js-tag article-tag-list-link color4">RabbitMQ</a>
+        			<a href="/categories/环境配置//" class="article-tag-list-link color5">环境配置</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" target="_blank" rel="noopener" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" target="_blank" rel="noopener" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" target="_blank" rel="noopener" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;" target="_blank" rel="noopener"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/12/14/%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AEntp%E6%97%B6%E9%97%B4%E5%90%8C%E6%AD%A5%E6%9C%8D%E5%8A%A1/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+    <a href="/2020/02/26/RabbitMQ%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%B6%88%E6%81%AF%E5%A4%84%E7%90%86/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          RabbitMQ的原理和消息处理
+        
+      </div>
+    </a>
   
   
-    </div></section>
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" target="_blank" rel="noopener" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    目录，不存在的…
+                    </div>
+                </span>
+            </div>
+        </div>
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -217,9 +387,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
